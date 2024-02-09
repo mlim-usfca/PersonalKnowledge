@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import React, { useState, useEffect } from 'react';
+
 import {
     GoogleAuthProvider,
     getAuth,
@@ -8,9 +8,6 @@ import {
     createUserWithEmailAndPassword,
     sendPasswordResetEmail,
     signOut,
-    onAuthStateChanged,
-    getIdToken,
-    getIdTokenResult,
 } from "firebase/auth";
 import {
     getFirestore,
@@ -20,12 +17,9 @@ import {
     where,
     addDoc,
 } from "firebase/firestore";
-import { getDatabase, ref, onValue } from "firebase/database";
-import UseAuth from './system/UseAuth'; // Adjust the import path as necessary
-
 
 const firebaseConfig = {
-  // content here is shared on slace
+    // content here is shared on slace
 };
 
 const app = initializeApp(firebaseConfig);
@@ -35,6 +29,26 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 
 const googleProvider = new GoogleAuthProvider();
+
+const signInWithGoogle = async () => {
+  try {
+    const res = await signInWithPopup(auth, googleProvider);
+    const user = res.user;
+    const q = query(collection(db, "users"), where("uid", "==", user.uid));
+    const docs = await getDocs(q);
+    if (docs.docs.length === 0) {
+      await addDoc(collection(db, "users"), {
+        uid: user.uid,
+        name: user.displayName,
+        authProvider: "google",
+        email: user.email,
+      });
+    }
+  } catch (err) {
+    console.error(err);
+    alert(err.message);
+  }
+};
 
 const logInWithEmailAndPassword = async (email, password) => {
     try {
@@ -76,4 +90,4 @@ const logout = () => {
 };
 
 // Export the constants
-export { auth, signInWithEmailAndPassword, db, logout, registerWithEmailAndPassword, sendPasswordResetEmail };
+export { auth, signInWithEmailAndPassword, signInWithGoogle, db, logout, registerWithEmailAndPassword, sendPasswordResetEmail };
