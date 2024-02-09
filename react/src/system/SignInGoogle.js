@@ -11,11 +11,9 @@ const SignInGoogle = () => {
     if (authState.status === 'in') {
         return <div>Welcome, {authState.user.displayName}</div>;
     }
-    if (authState.status === 'out') {
+    else{
         return <button onClick={signInWithGoogle}>Sign in with Google</button>;
     }
-    
-    
 };
 
 export default SignInGoogle;

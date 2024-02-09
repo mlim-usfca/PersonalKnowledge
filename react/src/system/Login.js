@@ -1,46 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { auth, signInWithEmailAndPassword } from "../firebase";
-import { useAuthState } from "react-firebase-hooks/auth";
+import { signInWithEmailAndPassword } from "../firebase";
 import "./Login.css";
-import { onAuthStateChanged, getIdToken, getIdTokenResult } from "firebase/auth";
-import { getDatabase, ref, onValue } from "firebase/database";
 import SignInGoogle from "./SignInGoogle";
+import useAuth from './UseAuth'; // Adjust the import path as necessary
 
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [user, loading, error] = useAuthState(auth);
-  const [authState, setAuthState] = useState({ status: 'loading' });
   const navigate = useNavigate();
-  const database = getDatabase();
-  
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async user => {
-      if (user) {
-        const token = await getIdToken(user);
-        const idTokenResult = await getIdTokenResult(user);
-        const hasuraClaim = idTokenResult.claims['https://hasura.io/jwt/claims'];
-
-        if (hasuraClaim) {
-          setAuthState({ status: 'in', user, token });
-        } else {
-          const metadataRef = ref(database, `metadata/${user.uid}/refreshTime`);
-
-          onValue(metadataRef, async snapshot => {
-            if (!snapshot.exists()) return;
-            const newToken = await getIdToken(user, true);
-            setAuthState({ status: 'in', user, token: newToken });
-          });
-        }
-      } else {
-        setAuthState({ status: 'out' });
-      }
-    });
-
-    // Cleanup subscription on component unmount
-    return () => unsubscribe();
-  }, []);
+  const { authState } = useAuth();
 
   // Navigate to dashboard if user is i
   useEffect(() => {
@@ -66,12 +35,12 @@ function Login() {
           onChange={(e) => setPassword(e.target.value)}
           placeholder="Password"
         />
-        <button
+        {/* <button
           className="login__btn"
           onClick={() => signInWithEmailAndPassword(email, password)}
         >
           Login
-        </button>
+        </button> */}
         <SignInGoogle></SignInGoogle>
         <div>
           <Link to="/reset">Forgot Password</Link>
