@@ -1,23 +1,21 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { signInWithEmailAndPassword } from "../firebase";
+import { auth, signInWithEmailAndPassword, signInWithGoogle } from "../firebase";
+import { useAuthState } from "react-firebase-hooks/auth";
 import "./Login.css";
-import SignInGoogle from "./SignInGoogle";
-import useAuth from './UseAuth'; // Adjust the import path as necessary
 
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [user, loading, error] = useAuthState(auth);
   const navigate = useNavigate();
-  const { authState } = useAuth();
-
-  // Navigate to dashboard if user is i
   useEffect(() => {
-    if (authState.status === 'in') {
-      navigate("/dashboard");
+    if (loading) {
+      // maybe trigger a loading screen
+      return;
     }
-  }, [authState, navigate]);
-
+    if (user) navigate("/dashboard");
+  }, [user, loading]);
   return (
     <div className="login">
       <div className="login__container">
@@ -35,13 +33,15 @@ function Login() {
           onChange={(e) => setPassword(e.target.value)}
           placeholder="Password"
         />
-        {/* <button
+        <button
           className="login__btn"
           onClick={() => signInWithEmailAndPassword(email, password)}
         >
           Login
-        </button> */}
-        <SignInGoogle></SignInGoogle>
+        </button>
+        <button className="login__btn login__google" onClick={signInWithGoogle}>
+          Login with Google
+        </button>
         <div>
           <Link to="/reset">Forgot Password</Link>
         </div>
