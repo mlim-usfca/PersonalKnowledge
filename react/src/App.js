@@ -4,10 +4,9 @@ import Login from "./system/Login";
 import Register from "./system/Register";
 import Reset from "./system/Reset";
 import Dashboard from "./system/Dashboard";
-import { auth, db, app } from './firebase';
+import { auth, app } from './firebase';
 import React, { useEffect, useState } from "react";
 import { getDatabase, ref, onValue } from 'firebase/database';
-import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, getIdToken, getIdTokenResult } from 'firebase/auth';
 
 function App() {
   const [authState, setAuthState] = useState({ status: "loading" });

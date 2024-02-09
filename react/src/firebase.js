@@ -25,7 +25,7 @@ const firebaseConfig = {
     storageBucket: "dragonai-auth.appspot.com",
     messagingSenderId: "77005197985",
     appId: "1:77005197985:web:c1a370d7c5050c4e9256e0"
-  };
+};
 const app = initializeApp(firebaseConfig);
 
 const auth = getAuth(app);
