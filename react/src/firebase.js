@@ -94,4 +94,4 @@ const logout = () => {
 };
 
 // Export the constants
-export { auth, signInWithEmailAndPassword, signInWithGoogle, db, logout, registerWithEmailAndPassword, sendPasswordResetEmail };
+export { app, auth, signInWithEmailAndPassword, signInWithGoogle, db, logout, registerWithEmailAndPassword, sendPasswordResetEmail };
