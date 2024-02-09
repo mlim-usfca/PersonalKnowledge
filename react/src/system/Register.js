@@ -4,9 +4,10 @@ import { Link, useNavigate } from "react-router-dom";
 import {
   auth,
   registerWithEmailAndPassword,
-  signInWithGoogle,
 } from "../firebase";
 import "./Register.css";
+import SignInGoogle  from "./SignInGoogle";
+
 function Register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -48,12 +49,7 @@ function Register() {
         <button className="register__btn" onClick={register}>
           Register
         </button>
-        <button
-          className="register__btn register__google"
-          onClick={signInWithGoogle}
-        >
-          Register with Google
-        </button>
+        <SignInGoogle></SignInGoogle>
         <div>
           Already have an account? <Link to="/">Login</Link> now.
         </div>

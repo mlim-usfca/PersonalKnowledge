@@ -1,21 +1,54 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { auth, signInWithEmailAndPassword, signInWithGoogle } from "../firebase";
+import { auth, signInWithEmailAndPassword } from "../firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 import "./Login.css";
+import { onAuthStateChanged, getIdToken, getIdTokenResult } from "firebase/auth";
+import { getDatabase, ref, onValue } from "firebase/database";
+import SignInGoogle from "./SignInGoogle";
 
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [user, loading, error] = useAuthState(auth);
+  const [authState, setAuthState] = useState({ status: 'loading' });
   const navigate = useNavigate();
+  const database = getDatabase();
+  
   useEffect(() => {
-    if (loading) {
-      // maybe trigger a loading screen
-      return;
+    const unsubscribe = onAuthStateChanged(auth, async user => {
+      if (user) {
+        const token = await getIdToken(user);
+        const idTokenResult = await getIdTokenResult(user);
+        const hasuraClaim = idTokenResult.claims['https://hasura.io/jwt/claims'];
+
+        if (hasuraClaim) {
+          setAuthState({ status: 'in', user, token });
+        } else {
+          const metadataRef = ref(database, `metadata/${user.uid}/refreshTime`);
+
+          onValue(metadataRef, async snapshot => {
+            if (!snapshot.exists()) return;
+            const newToken = await getIdToken(user, true);
+            setAuthState({ status: 'in', user, token: newToken });
+          });
+        }
+      } else {
+        setAuthState({ status: 'out' });
+      }
+    });
+
+    // Cleanup subscription on component unmount
+    return () => unsubscribe();
+  }, []);
+
+  // Navigate to dashboard if user is i
+  useEffect(() => {
+    if (authState.status === 'in') {
+      navigate("/dashboard");
     }
-    if (user) navigate("/dashboard");
-  }, [user, loading]);
+  }, [authState, navigate]);
+
   return (
     <div className="login">
       <div className="login__container">
@@ -39,9 +72,7 @@ function Login() {
         >
           Login
         </button>
-        <button className="login__btn login__google" onClick={signInWithGoogle}>
-          Login with Google
-        </button>
+        <SignInGoogle></SignInGoogle>
         <div>
           <Link to="/reset">Forgot Password</Link>
         </div>
