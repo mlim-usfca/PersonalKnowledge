@@ -19,12 +19,7 @@ import {
 } from "firebase/firestore";
 
 const firebaseConfig = {
-    apiKey: "AIzaSyDgz-lZbYgTFROMpyV6QDuJY-hiY4KBmjQ",
-    authDomain: "dragonai-auth.firebaseapp.com",
-    projectId: "dragonai-auth",
-    storageBucket: "dragonai-auth.appspot.com",
-    messagingSenderId: "77005197985",
-    appId: "1:77005197985:web:c1a370d7c5050c4e9256e0"
+// 
 };
 const app = initializeApp(firebaseConfig);
 
