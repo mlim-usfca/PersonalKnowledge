@@ -17,8 +17,9 @@ function App() {
         const token = await user.getIdToken();
         const idTokenResult = await user.getIdTokenResult();
         const hasuraClaim = idTokenResult.claims["https://hasura.io/jwt/claims"];
-
+        
         if (hasuraClaim) {
+          console.log(hasuraClaim);
           setAuthState({ status: "in", user, token });
         } else {
           // Check if refresh is required.
