@@ -19,7 +19,7 @@ import {
 } from "firebase/firestore";
 
 const firebaseConfig = {
-    // content here is shared on slace
+    // content here is shared on slack: https://usfmscs.slack.com/archives/C06G2NJAPL1/p1707508144159709
 };
 
 
@@ -63,7 +63,7 @@ const logInWithEmailAndPassword = async (email, password) => {
 
 
 async function insertUser(email, id) {
-  const admin_secret = "";
+  const admin_secret = ""; // secret is shared on slack: https://usfmscs.slack.com/archives/C06G2NJAPL1/p1707508144159709
   const url = "https://dragonai.hasura.app/v1/graphql";
   const query = `
     mutation InsertUsers($email: String, $id: String) {
