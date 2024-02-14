@@ -68,7 +68,7 @@ const logInWithEmailAndPassword = async (email, password) => {
 
 
 async function insertUser(email, id) {
-  const admin_secret = "EuJgHgg2abxowM4k8RkGkNTbJDsEa1uh4Ol01JZN5z1VK5pklzxPn1hO89UmLccu";
+  const admin_secret = "";
   const url = "https://dragonai.hasura.app/v1/graphql";
   const query = `
     mutation InsertUsers($email: String, $id: String) {
