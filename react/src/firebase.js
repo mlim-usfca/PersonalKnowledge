@@ -19,12 +19,7 @@ import {
 } from "firebase/firestore";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDBc_OmG7whCPGX87lr9ymn6G4RWT0FN2o",
-  authDomain: "dragonai-firebase.firebaseapp.com",
-  projectId: "dragonai-firebase",
-  storageBucket: "dragonai-firebase.appspot.com",
-  messagingSenderId: "85302665210",
-  appId: "1:85302665210:web:0b670a86dd3556b0d68e43"
+    // content here is shared on slace
 };
 
 
@@ -138,5 +133,5 @@ const logout = () => {
     signOut(auth);
 };
 
-// Export the constants
 export { app, auth, signInWithEmailAndPassword, signInWithGoogle, db, logout, registerWithEmailAndPassword, sendPasswordResetEmail };
+
