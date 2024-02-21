@@ -1,0 +1,26 @@
+{
+    "name": "DragonAI Extension",
+    "version": "1.0.0",
+    "manifest_version": 2,
+
+    "description": "Save web links",
+
+    "icons": {
+      "36": "images/main-36.png"
+    },
+
+    "browser_action": {
+        "default_icon": "images/main-36.png",
+		"default_title": "DragonAI Extension",  
+        "default_popup": "popup/popup.html"
+    },
+
+    "background": {
+      "scripts": [
+        "background.js"
+      ]
+    },
+
+    "options_page": "options.html",
+    "permissions": ["tabs"]
+  }
