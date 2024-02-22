@@ -1,0 +1,14 @@
+version: "3.6"
+services:
+  web:
+    build: ./web
+    volumes:
+      - ./web:/app
+      - /app/node_modules
+    environment:
+      - NEXT_PUBLIC_HASURA_URL=http://localhost:8080
+    ports:
+      - "3000:3000"
+    depends_on:
+      - graphql-engine
+
