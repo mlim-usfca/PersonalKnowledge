@@ -1,5 +1,5 @@
 # Use the official Node.js 21 image as a parent image
-FROM node:21-alpine
+FROM node:21-alpine as builder
 
 # Set the working directory in the container
 WORKDIR /app
@@ -17,8 +17,19 @@ RUN npm install
 # For pnpm, use:
 # RUN pnpm install --frozen-lockfile
 
+# Voume for caching node modules
+# VOLUME /app/node_modules
+
 # Copy the rest of your app's source code from your host to your image filesystem.
 COPY . .
+
+RUN npm run build
+
+FROM node:21-alpine
+
+WORKDIR /app
+
+COPY --from=builder /app ./
 
 # Expose the port the app runs on
 EXPOSE 3000
