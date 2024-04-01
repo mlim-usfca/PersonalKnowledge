@@ -1,0 +1,26 @@
+{
+	"manifest_version": 2,
+	"name": "my extension",
+	"version": "1.0.0",
+
+	"description": "Save links",
+
+	"icons": {
+		"36": "icons/main-36.png",
+		"48": "icons/main-48.png",
+		"64": "icons/main-64.png",
+		"96": "icons/main-96.png",
+		"128": "icons/main-128.png"
+	},
+
+	"permissions": ["tabs", "storage"],
+
+	"browser_action": {
+		"default_icon": "icons/main-64.png",
+		"default_title": "Save for later",
+		"default_popup": "popup/main.html",
+		"browser_style": true
+	},
+	
+	"offline_enabled": true
+}
