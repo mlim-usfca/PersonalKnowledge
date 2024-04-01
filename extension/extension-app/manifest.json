@@ -17,7 +17,7 @@
 
 	"browser_action": {
 		"default_icon": "icons/main-64.png",
-		"default_title": "Save for later",
+		"default_title": "my extension",
 		"default_popup": "popup/main.html",
 		"browser_style": true
 	},
