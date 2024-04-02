@@ -1,10 +1,12 @@
 import { useState } from 'react'
 import AuthModal from '@/components/auth';
 import Image from 'next/image';
+import { supabase } from './supabase';
 
 const Landing: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [authMode, setAuthMode] = useState<"signup" | "login">("signup"); 
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   const handleSignUp = () => {
     setAuthMode("signup");
@@ -42,6 +44,11 @@ const Landing: React.FC = () => {
           onClose={() => setIsModalOpen(false)} 
           mode={authMode} 
           onToggleMode={() => setAuthMode(authMode === "signup"? "login" : "signup")}
+          onAuthenticated={(isAuthenticated) => {
+            console.log("Authenticated:", isAuthenticated);
+            setIsAuthenticated(isAuthenticated); // Update the authentication status
+            setIsModalOpen(!isAuthenticated); // Close modal if authenticated
+          }}
         />}
       </div>
     )

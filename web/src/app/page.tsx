@@ -1,13 +1,21 @@
 'use client'
 
-import Image from "next/image";
-import { useState } from "react";
 import Dashboard from "@/components/dashboard";
 import Landing from "@/components/landing";
 import ReduxProvider from "@/store/redux-provider";
+import { useState, useEffect } from 'react';
+import { supabase } from '../components/supabase'
 
 export default function Home() {
-  const isAuthenticated = true;
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+
+    const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
+      setIsAuthenticated(!!session);
+    });
+    
+  }, []);
 
   return (
     <ReduxProvider>
