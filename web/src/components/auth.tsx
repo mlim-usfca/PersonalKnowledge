@@ -1,13 +1,17 @@
 'use client';
 
 import React from 'react';
+import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
+import { cookies } from 'next/headers';
+import { createClient } from "@supabase/supabase-js";
+import { supabase } from './supabase';
 
-// Define types for your component's props and state if needed
 type AuthModalProps = {
   // Define props here if needed, for example:
   onClose: () => void;
   mode: 'signup' | 'login';
   onToggleMode: () => void;
+  onAuthenticated: (isAuthenticated: boolean) => void;
 };
 
 const AuthModal: React.FC<AuthModalProps> = (props) => {
@@ -16,6 +20,22 @@ const AuthModal: React.FC<AuthModalProps> = (props) => {
 
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
+  
+  const googleOAuth = async () => {
+    try {
+      const { user, session, error } = await supabase.auth.signInWithOAuth({ provider: 'google' });
+      if (error) throw error;
+
+      if (user) {
+        props.onAuthenticated(true);
+      } else {
+        props.onAuthenticated(false);
+      }
+    } catch (error) {
+      console.error('Login error', error.message);
+      props.onAuthenticated(false);
+    }
+  };
 
   const handleSignUp = () => {
     console.log('sign up', email, password);
@@ -61,6 +81,7 @@ const AuthModal: React.FC<AuthModalProps> = (props) => {
           <button
             className="hover:bg-gray-50 text-gray-500 font-semibold mb-2 py-2 px-4 w-full border border-gray-300 rounded shadow"
             type="button"
+            onClick={googleOAuth}
           >
             {props.mode === 'signup' ? ' Sign Up' : ' Log In'} with Google
           </button>
@@ -84,3 +105,4 @@ const AuthModal: React.FC<AuthModalProps> = (props) => {
 };
 
 export default AuthModal;
+
