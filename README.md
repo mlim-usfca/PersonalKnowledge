@@ -7,4 +7,4 @@ Follow this [instructions](https://github.com/mlim-usfca/PersonalKnowledge/pull/
 ## Web
 
 Follow this [instructions](https://github.com/mlim-usfca/PersonalKnowledge/pull/15)
-Also, you can find detailed instructions on `web/README.md`, but we are no longer using `docker` version of UI.
+Also, you can find detailed instructions on `web/README.md`.
