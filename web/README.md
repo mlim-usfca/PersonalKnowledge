@@ -2,9 +2,10 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 
 ## Getting Started
 
-### Using Docker (not in `dev_2.0`)
-You can use the docker-compose.yml file from the root project directory using the command:
+### Using Docker
+You can use the docker-compose.yml file from the `/web` project directory using the command:
 ```bash
+cd ./web
 docker-compose -f docker-compose.dev.yml up
 ```
 

@@ -11,9 +11,9 @@ COPY package*.json ./
 # COPY pnpm-lock.yaml ./
 
 # Install dependencies
-RUN npm install
+# RUN npm install
 # For yarn, use:
-# RUN yarn install
+RUN yarn install
 # For pnpm, use:
 # RUN pnpm install --frozen-lockfile
 
@@ -23,7 +23,8 @@ RUN npm install
 # Copy the rest of your app's source code from your host to your image filesystem.
 COPY . .
 
-RUN npm run build
+# RUN npm run build
+RUN yarn
 
 FROM node:21-alpine
 
@@ -35,9 +36,9 @@ COPY --from=builder /app ./
 EXPOSE 3000
 
 # Command to run the application
-CMD ["npm", "run", "dev"]
+# CMD ["npm", "run", "dev"]
 # For yarn, use:
-# CMD ["yarn", "dev"]
+CMD ["yarn", "dev"]
 # For pnpm, use:
 # CMD ["pnpm", "run", "dev"]
 # For bun, use:
