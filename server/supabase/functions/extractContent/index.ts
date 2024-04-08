@@ -31,22 +31,27 @@ async function extractWebContent(url: string) : Promise<string>{
 // Extracts YouTube transcript using Puppeteer to handle dynamic content
 async function extractYoutubeTranscript(url: string) : Promise<string> {
   try {
-    console.log(`wss://chrome.browserless.io?token=${Deno.env.get('PUPPETEER_BROWSERLESS_IO_KEY')}`)
     // Visit browserless.io to get your free API token
     const browser = await puppeteer.connect({
       browserWSEndpoint: `wss://chrome.browserless.io?token=${Deno.env.get(
         'PUPPETEER_BROWSERLESS_IO_KEY'
       )}`,
     })
-    const page = await browser.newPage()
+    const page = await browser.newPage();
 
-    await page.goto(url)
+    await page.goto(url);
+
+    // Wait for the '#demo a' elements to be loaded in the DOM
+    await page.waitForSelector('#demo a', {visible: true});
+
     const extractedText = await page.evaluate(() => {
       return Array.from(document.querySelectorAll('#demo a'))
                   .map(element => element.innerText)
                   .join(' ')
                   .trim();
     });
+
+    await browser.disconnect(); // Disconnect from the browser session
 
     return extractedText;
   } catch (e) {
