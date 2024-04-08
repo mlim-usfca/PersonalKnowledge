@@ -3,6 +3,7 @@
 import React, { Fragment, useState } from 'react';
 import { Listbox, Transition } from '@headlessui/react';
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid';
+import { supabase } from './supabase';
 
 type NewLinkModalProps = {
   onClose: () => void;
@@ -27,6 +28,27 @@ const NewLinkModal: React.FC<NewLinkModalProps> = (props) => {
   const handleSubmit = () => {
     props.onClose();
   };
+
+async function addNewLink() {
+  try {
+      const { data: { user } } = await supabase.auth.getUser()
+      const { error } = await supabase
+        .from('links')
+        .insert([
+            {link: link, owner: user?.id, purpose: intent, owner_email: user?.email}
+        ])
+      
+      if (error) {
+          throw new Error('Submission failed');
+      } else {
+          alert('Submit successfully');
+          props.onClose();
+      }
+  } catch (error) {
+      alert('Couldn\'t submit, try again');
+      console.error(error);
+  }
+}
 
   return (
     <div className="flex items-center justify-center h-screen w-screen fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto z-10">
@@ -128,7 +150,7 @@ const NewLinkModal: React.FC<NewLinkModalProps> = (props) => {
           <button
             className="hover:bg-indigo-700 bg-indigo-600 text-white font-semibold my-2 py-2 px-4 w-full border border-gray-300 rounded shadow"
             type="button"
-            onClick={handleSubmit}
+            onClick={addNewLink}
           >
             Submit
           </button>
