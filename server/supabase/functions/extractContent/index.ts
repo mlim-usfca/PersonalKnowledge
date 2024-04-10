@@ -1,14 +1,20 @@
 import { DOMParser } from "https://deno.land/x/deno_dom/deno-dom-wasm.ts";
+import puppeteer from "https://deno.land/x/puppeteer@16.2.0/mod.ts";
+
 import { createClient } from "@supabase/supabase-js";
+import { Database } from '../_lib/database.ts';
 
 const supabaseUrl = Deno.env.get("SUPABASE_URL");
 const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY");
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 console.log("Hello from Functions!");
 
-async function extractWebContent(html: string): Promise<string> {
+async function extractWebContent(url: string) : Promise<string>{
+  const response = await fetch(url);
+  const html = await response.text();
+
   const document = new DOMParser().parseFromString(html, "text/html");
+
   if (!document) {
     throw new Error("Failed to parse HTML document");
   }
@@ -22,6 +28,39 @@ async function extractWebContent(html: string): Promise<string> {
   return extractedText.trim();
 }
 
+// Extracts YouTube transcript using Puppeteer to handle dynamic content
+async function extractYoutubeTranscript(url: string) : Promise<string> {
+  try {
+    // Visit browserless.io to get your free API token
+    const browser = await puppeteer.connect({
+      browserWSEndpoint: `wss://chrome.browserless.io?token=${Deno.env.get(
+        'PUPPETEER_BROWSERLESS_IO_KEY'
+      )}`,
+    })
+    const page = await browser.newPage();
+
+    await page.goto(url);
+
+    // Wait for the '#demo a' elements to be loaded in the DOM
+    await page.waitForSelector('#demo a', {visible: true});
+
+    const extractedText = await page.evaluate(() => {
+      return Array.from(document.querySelectorAll('#demo a'))
+                  .map(element => element.innerText)
+                  .join(' ')
+                  .trim();
+    });
+
+    await browser.disconnect(); // Disconnect from the browser session
+
+    return extractedText;
+  } catch (e) {
+    console.error(e);
+    return "";
+  }
+
+}
+
 async function handleRequest(req: Request): Promise<Response> {
   if (req.method !== "POST") {
     return new Response("Only POST method is allowed", { status: 405 });
@@ -29,18 +68,45 @@ async function handleRequest(req: Request): Promise<Response> {
 
   try {
     const requestBody = await req.json();
+    
+    const authorization = req.headers.get('Authorization');
+
+    if (!authorization) {
+      return new Response(
+        JSON.stringify({ error: `No authorization header passed` }),
+        {
+          status: 500,
+          headers: { 'Content-Type': 'application/json' },
+        }
+      );
+    }
+    
     if (requestBody.url) {
-      // Fetch the HTML content from the URL
-      const response = await fetch(requestBody.url);
-      const html = await response.text();
+      const url = requestBody.url;
+      const youtubePrefix = 'https://www.youtube.com/watch?v=';
 
-      // Extract content from the HTML
-      const content = await extractWebContent(html);
+      if (url.startsWith(youtubePrefix)) {// parse youtube transcript
+        const videoId = url.substring(youtubePrefix.length);
+        const transcript = await extractYoutubeTranscript(`https://youtubetranscript.com/?v=${videoId}`);
+        
+        console.log('Transcript extracted successfully:', transcript);
+        
+        // Return the extracted transcript
+        return new Response(JSON.stringify({ transcript }), {
+          headers: { "Content-Type": "application/json" },
+        });
+        
+      } else {// parse web content
+        const webContent = await extractWebContent(url);
 
-      // Return the extracted content
-      return new Response(JSON.stringify({ content }), {
-        headers: { "Content-Type": "application/json" },
-      });
+        console.log('Web content extracted successfully:', webContent);
+
+        // Return the extracted transcript
+        return new Response(JSON.stringify({ webContent }), {
+          headers: { "Content-Type": "application/json" },
+        });
+      }
+
     } else if (requestBody.name) {
       // Original greeting functionality
       const data = {
@@ -72,6 +138,6 @@ Deno.serve(handleRequest);
   curl -i --location --request POST 'http://127.0.0.1:54321/functions/v1/extractContent' \
     --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0' \
     --header 'Content-Type: application/json' \
-    --data '{"name":"Functions"}'
+    --data '{"name":"extractContent","url": "https://example.com"}'
 
 */
