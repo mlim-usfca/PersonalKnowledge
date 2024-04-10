@@ -7,6 +7,12 @@ import { Database } from '../_lib/database.ts';
 const supabaseUrl = Deno.env.get("SUPABASE_URL");
 const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY");
 
+export const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers':
+    'authorization, x-client-info, apikey, content-type',
+};
+
 console.log("Hello from Functions!");
 
 async function extractWebContent(url: string) : Promise<string>{
@@ -62,6 +68,10 @@ async function extractYoutubeTranscript(url: string) : Promise<string> {
 }
 
 async function handleRequest(req: Request): Promise<Response> {
+  if (req.method === 'OPTIONS') {
+    return new Response('ok', { headers: corsHeaders })
+  }
+
   if (req.method !== "POST") {
     return new Response("Only POST method is allowed", { status: 405 });
   }
@@ -87,23 +97,25 @@ async function handleRequest(req: Request): Promise<Response> {
 
       if (url.startsWith(youtubePrefix)) {// parse youtube transcript
         const videoId = url.substring(youtubePrefix.length);
-        const transcript = await extractYoutubeTranscript(`https://youtubetranscript.com/?v=${videoId}`);
+        const content = await extractYoutubeTranscript(`https://youtubetranscript.com/?v=${videoId}`);
         
-        console.log('Transcript extracted successfully:', transcript);
+        console.log('Transcript extracted successfully:', content);
         
         // Return the extracted transcript
-        return new Response(JSON.stringify({ transcript }), {
-          headers: { "Content-Type": "application/json" },
+        return new Response(JSON.stringify({ content }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         });
+
+       
         
       } else {// parse web content
-        const webContent = await extractWebContent(url);
+        const content = await extractWebContent(url);
 
-        console.log('Web content extracted successfully:', webContent);
+        console.log('Web content extracted successfully:', content);
 
         // Return the extracted transcript
-        return new Response(JSON.stringify({ webContent }), {
-          headers: { "Content-Type": "application/json" },
+        return new Response(JSON.stringify({ content }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         });
       }
 
@@ -113,7 +125,7 @@ async function handleRequest(req: Request): Promise<Response> {
         message: `Hello ${requestBody.name}!`,
       };
       return new Response(JSON.stringify(data), {
-        headers: { "Content-Type": "application/json" },
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     } else {
       // Handle invalid request body
@@ -122,7 +134,7 @@ async function handleRequest(req: Request): Promise<Response> {
   } catch (error) {
     return new Response(JSON.stringify({ error: error.message }), {
       status: 500,
-      headers: { "Content-Type": "application/json" },
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   }
 }
