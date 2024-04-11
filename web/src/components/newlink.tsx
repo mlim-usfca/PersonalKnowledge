@@ -29,26 +29,49 @@ const NewLinkModal: React.FC<NewLinkModalProps> = (props) => {
     props.onClose();
   };
 
-async function addNewLink() {
-  try {
-      const { data: { user } } = await supabase.auth.getUser()
-      const { error } = await supabase
+  async function addNewLink() {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+  
+      if (!user) {
+        alert('User must be logged in to submit links.');
+        return;
+      }
+  
+      // Now, call the 'extractContent' edge function
+      const { data: data, error: extractError } = await supabase.functions.invoke('extractContent', {
+        body: JSON.stringify({ url: link }) 
+      });
+  
+      if (extractError) {
+        alert("Extract content failed");
+        console.error('Extract content failed:', extractError);
+        return;
+      }
+      console.log("Extracted content:", data);
+  
+      // Proceed to insert the link into the database, including the extracted content
+      const { error: insertError } = await supabase
         .from('links')
         .insert([
-            {link: link, owner: user?.id, purpose: intent, owner_email: user?.email}
-        ])
-      
-      if (error) {
-          throw new Error('Submission failed');
+          { link: link, owner: user.id, purpose: intent, owner_email: user.email, content: data.content }
+        ]);
+  
+      if (insertError) {
+        alert("Submit failed");
+        console.error('Submission failed:', insertError);
       } else {
-          alert('Submit successfully');
+        // Assuming `props.onClose` is a function to close a modal or dialog
+        if (props && typeof props.onClose === 'function') {
           props.onClose();
+        }
       }
-  } catch (error) {
+    } catch (error) {
       alert('Couldn\'t submit, try again');
       console.error(error);
+    }
   }
-}
+  
 
   return (
     <div className="flex items-center justify-center h-screen w-screen fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto z-10">
