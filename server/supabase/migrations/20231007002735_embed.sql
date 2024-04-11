@@ -19,6 +19,8 @@
 -- Also supports 2 more optional arguments: `private.embed(<content_column>, <embedding_column>, <batch_size>, <timeout_milliseconds>)`
 -- where the third argument indicates the number of records to include in each edge function call (default 5),
 -- and the fourth argument specifies the HTTP connection timeout for each edge function call (default 300000 ms).
+
+
 create function private.embed() 
 returns trigger 
 language plpgsql

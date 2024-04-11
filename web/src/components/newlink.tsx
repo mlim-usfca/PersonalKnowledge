@@ -49,23 +49,41 @@ const NewLinkModal: React.FC<NewLinkModalProps> = (props) => {
         return;
       }
       console.log("Extracted content:", data);
-  
+      
       // Proceed to insert the link into the database, including the extracted content
       const { error: insertError } = await supabase
         .from('links')
         .insert([
           { link: link, owner: user.id, purpose: intent, owner_email: user.email, content: data.content }
         ]);
-  
-      if (insertError) {
-        alert("Submit failed");
-        console.error('Submission failed:', insertError);
-      } else {
+      
+      // Check if the insert operation was successful and data is returned
+      if (!insertError) {
+        const { data: link_data, error: fetchError } = await supabase
+        .from('links')
+        .select('id')
+        .eq('link', link);
+        // Assuming 'id' is the name of your auto-generated primary key column
+        const linkId = link_data[0].id;
+        console.log("Inserted link ID:", linkId);
+        const { error: processError } = await supabase.functions.invoke('process', {
+          body: JSON.stringify({ extracted_content: data.content, link_id: linkId }) 
+        });
+
+        if (processError) {
+          alert("process failed");
+          console.error('process failed:', extractError);
+          return;
+        }
         // Assuming `props.onClose` is a function to close a modal or dialog
         if (props && typeof props.onClose === 'function') {
           props.onClose();
         }
+      } else {
+        alert("Submit failed");
+        console.error("Insert error:", insertError);
       }
+  
     } catch (error) {
       alert('Couldn\'t submit, try again');
       console.error(error);

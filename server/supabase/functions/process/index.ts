@@ -5,7 +5,19 @@ import { processMarkdown } from '../_lib/markdown-parser.ts';
 const supabaseUrl = Deno.env.get('SUPABASE_URL');
 const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY');
 
+export const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers':
+    'authorization, x-client-info, apikey, content-type',
+};
+
+console.log("Hello from Functions!");
+
 Deno.serve(async (req) => {
+  if (req.method === 'OPTIONS') {
+    return new Response('ok', { headers: corsHeaders })
+  }
+  
   if (!supabaseUrl || !supabaseAnonKey) {
     return new Response(
       JSON.stringify({
@@ -41,17 +53,16 @@ Deno.serve(async (req) => {
     },
   });
 
-  const { document_id } = await req.json();
+  const requestBody = await req.json();
+  const link_id = await requestBody.link_id;
+  console.log("link id is:",link_id);
+  const extracted_content = await requestBody.extracted_content;
+  console.log("extracted_content is:",extracted_content);
 
-  const { data: document } = await supabase
-    .from('documents_with_storage_path')
-    .select()
-    .eq('id', document_id)
-    .single();
 
-  if (!document?.storage_object_path) {
+  if (!link_id || !extracted_content) {
     return new Response(
-      JSON.stringify({ error: 'Failed to find uploaded document' }),
+      JSON.stringify({ error: 'no link_id or extracted_content provided in request body' }),
       {
         status: 500,
         headers: { 'Content-Type': 'application/json' },
@@ -59,26 +70,11 @@ Deno.serve(async (req) => {
     );
   }
 
-  const { data: file } = await supabase.storage
-    .from('files')
-    .download(document.storage_object_path);
-
-  if (!file) {
-    return new Response(
-      JSON.stringify({ error: 'Failed to download storage object' }),
-      {
-        status: 500,
-        headers: { 'Content-Type': 'application/json' },
-      }
-    );
-  }
-
-  const fileContents = await file.text();
-  const processedMd = processMarkdown(fileContents);
+  const processedMd = processMarkdown(extracted_content);
 
   const { error } = await supabase.from('document_sections').insert(
     processedMd.sections.map(({ content }) => ({
-      document_id,
+      link_id,
       content,
     }))
   );
@@ -95,7 +91,7 @@ Deno.serve(async (req) => {
   }
 
   console.log(
-    `Saved ${processedMd.sections.length} sections for file '${document.name}'`
+    `Saved ${processedMd.sections.length} sections for link '${link_id}'`
   );
 
   return new Response(null, {
