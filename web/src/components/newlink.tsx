@@ -1,6 +1,10 @@
 'use client';
 
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useState, useEffect } from 'react';
+import { useAppSelector, useAppDispatch } from '@/app/hooks';
+import { SavedLink, Tags } from '@/app/interfaces';
+import { addSavedLinkAsync } from '@/store/savedContentSlice';
+import { selectTagByName, fetchTagsAsync } from '@/store/tagsSlice';
 import { Listbox, Transition } from '@headlessui/react';
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid';
 import { pipeline } from "@xenova/transformers";
@@ -25,12 +29,32 @@ const intents = [
 ]
 
 const NewLinkModal: React.FC<NewLinkModalProps> = (props) => {
-
+  const dispatch = useAppDispatch();
+  const { tags, status: tagsStatus, error: tagsError } = useAppSelector(
+    (state) => state.tags
+  );
   const [link, setLink] = useState('');
   const [intent, setIntent] = useState(intents[0].name);
   const [isLoading, setIsLoading] = useState(false);
 
+  useEffect(() => {
+      dispatch(fetchTagsAsync('1'));
+  }, [dispatch]);
+
   const handleSubmit = () => {
+    // const tag = selectTagByName(intent);
+    // const tag = useAppSelector((state) => selectTagByName(state, intent));
+    const tag = { id: '10', name: 'to eat', emoji: '🍽️' }
+    if (!tag) {
+      throw new Error('No tag found for intent:'+ intent);
+    }
+    const savedLink: SavedLink = {
+      id: intent + '123',
+      title: link,
+      url: link,
+      tags: [tag]
+    };
+    dispatch(addSavedLinkAsync({userId: '1', savedLink}));
     props.onClose();
   };
 
@@ -129,6 +153,16 @@ const NewLinkModal: React.FC<NewLinkModalProps> = (props) => {
         <h3 className="text-3xl font-bold leading-6 font-medium text-gray-900 mt-5 mb-3">
           Save New Link
         </h3>
+        {/* <p>
+          {tags.map((tag) => (
+            <span
+              key={tag.id}
+              className="inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium bg-blue-100 text-blue-800 mr-2 mb-2"
+            >
+              {tag.name}
+            </span>
+          ))}
+        </p> */}
         <form
           className="bg-white rounded pt-6 pb-6"
           onSubmit={(e) => {

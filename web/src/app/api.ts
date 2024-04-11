@@ -3,7 +3,7 @@ import { Message, UserData, SavedLink, SavedCategory, Tags } from './interfaces'
 import { mockUser, mockMessages, mockLinks, mockTags, mockCategories } from './mockData';
 import { supabase } from '../components/supabase';
 
-const useMockData = true;
+const useMockData = process.env.NEXT_PUBLIC_DATA_SOURCE_TYPE === 'mock';
 
 // default config for axios
 const API = axios.create({
@@ -26,9 +26,9 @@ export const fetchUserData = async (userId: string): Promise<UserData> => {
 };
 
 export const fetchMessages = async (userId: string): Promise<Message[]> => {
-    if (useMockData) {
-        return mockMessages;
-    }
+    // if (useMockData) {
+    //     return mockMessages;
+    // }
 
     try {
         const response: AxiosResponse<Message[]> = await API.get(`/users/${userId}/messages`);
@@ -133,9 +133,13 @@ export const fetchSavedLinks = async (userId: string): Promise<SavedLink[]> => {
     }
 };
 
-export const addSavedLink = async (userId: string, link: SavedLink): Promise<SavedLink> => {
+export const addSavedLink = async (userId: string, savedLink: SavedLink): Promise<SavedLink> => {
+    if (useMockData) {  
+        return savedLink;
+    }
+
     try {
-        const response: AxiosResponse<SavedLink> = await API.post(`/users/${userId}/saved-links`, link);
+        const response: AxiosResponse<SavedLink> = await API.post(`/users/${userId}/saved-links`, savedLink);
         return response.data;
     } catch (error) {
         console.error("An error occurred while adding saved link:", error);

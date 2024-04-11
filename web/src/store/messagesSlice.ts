@@ -1,6 +1,8 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import type { RootState } from '@/app/store';
 import { fetchMessages, addMessage } from '@/app/api'; // Import your API functions
 import { Message } from '@/app/interfaces';
+import { mockMessages } from '@/app/mockData';
 
 interface MessagesState {
   messages: Message[];
@@ -8,17 +10,33 @@ interface MessagesState {
   error: string | null;
 }
 
-const initialState: MessagesState = {
-  messages: [],
-  status: 'idle',
-  error: null,
+const getInitialState = () => {
+  const initialState: MessagesState = {
+    messages: [],
+    status: 'idle',
+    error: null,
+  };
+  if (process.env.NEXT_PUBLIC_DATA_SOURCE_TYPE === 'mock') {
+    return {
+     ...initialState,
+      messages: mockMessages,
+      status:'succeeded',
+    };
+  }
+  return initialState;
 };
+
+const initialState = getInitialState();
 
 export const fetchMessagesAsync = createAsyncThunk(
   'messages/fetchMessages',
-  async (userId: string) => {
-    const response = await fetchMessages(userId);
-    return response;
+  async (userId: string, { rejectWithValue }) => {
+    try {
+      const response = await fetchMessages(userId);
+      return response;
+    } catch (error: any) {
+      return rejectWithValue(error.message);
+    }
   }
 );
 
@@ -53,7 +71,8 @@ const messagesSlice = createSlice({
       })
       .addCase(addMessageAsync.fulfilled, (state, action: PayloadAction<Message>) => {
         state.status = 'succeeded';
-        state.messages.push(action.payload);
+        state.messages = [...state.messages, action.payload];
+        console.log(state.messages);
       })
       .addCase(addMessageAsync.rejected, (state, action) => {
         state.status = 'failed';

@@ -25,10 +25,16 @@ export const mockMessages: Message[] = [
 
 export const mockTags: Tags[] = [
     { id: '1', name: 'Restaurants near me', emoji: '🍔' },
-    { id: '2', name: 'Relativity Theory', emoji: '🌌' },
+    // { id: '2', name: 'Relativity Theory', emoji: '🌌' },
     { id: '3', name: 'Sports', emoji: '⚽️' },
-    { id: '4', name: 'Cooking', emoji: '🍳' },
+    // { id: '4', name: 'Cooking', emoji: '🍳' },
     { id: '5', name: 'Science', emoji: '🔬' },
+    // { id: '7', name: 'to read', emoji: '📚' },
+    // { id: '8', name: 'to watch', emoji: '📺' },
+    // { id: '9', name: 'to listen', emoji: '🎧' },
+    { id: '10', name: 'to eat', emoji: '🍽️' },
+    // { id: '11', name: 'to buy', emoji: '🛒' },
+    { id: '12', name: 'to visit', emoji: '🗺️' },
 ];
 
 export const mockLinks: SavedLink[] = [
@@ -37,8 +43,7 @@ export const mockLinks: SavedLink[] = [
         title: 'How to make a burger',
         url: 'https://www.burger.com',
         tags: [
-            { id: '1', name: 'Cooking', emoji: '🍳' },
-            { id: '2', name: 'Food', emoji: '🍔' }
+            { id: '10', name: 'to eat', emoji: '🍽️' }
         ]
     },
     {
@@ -46,8 +51,7 @@ export const mockLinks: SavedLink[] = [
         title: 'Relativity Theory explained',
         url: 'https://www.relativity.com',
         tags: [
-            { id: '3', name: 'Science', emoji: '🔬' },
-            { id: '4', name: 'Physics', emoji: '⚛️' }
+            { id: '12', name: 'to visit', emoji: '🗺️' }
         ]
     },
     {
@@ -55,8 +59,7 @@ export const mockLinks: SavedLink[] = [
         title: 'Top 10 sports teams',
         url: 'https://www.sports.com',
         tags: [
-            { id: '3', name: 'Sports', emoji: '⚽️' },
-            { id: '5', name: 'Teams', emoji: '🏆' }
+            { id: '12', name: 'to visit', emoji: '🗺️' }
         ]
     }
 ];

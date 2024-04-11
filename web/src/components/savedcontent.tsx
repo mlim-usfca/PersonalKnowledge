@@ -1,11 +1,19 @@
 import React, { useState, useEffect } from "react";
+import { useAppSelector, useAppDispatch } from '@/app/hooks';
 import NewLinkModal from "./newlink";
 import NewCategoryModal from "./newcategory";
-import { SavedLink, SavedCategory } from '@/app/interfaces';
+import { SavedLink, SavedCategory, Tags } from '@/app/interfaces';
 import { fetchSavedCategories, fetchSavedLinks } from '@/app/api';
+import { fetchSavedLinksAsync } from '@/store/savedContentSlice';
+import { fetchTagsAsync } from '@/store/tagsSlice';
+
 
 const SavedContent: React.FC = () => {
-    // const [links, setLinks] = useState<SavedLink[]>([]);
+    const dispatch = useAppDispatch();
+    const { savedLinks, status, error } = useAppSelector((state) => state.savedLinks);
+    const { tags, status: tagsStatus, error: tagsError } = useAppSelector(
+        (state) => state.tags
+    );
     const [categories, setCategories] = useState<SavedCategory[]>([]);
     const [isNewLinkModalOpen, setIsNewLinkModalOpen] = useState(false);
     const [isNewCategoryModalOpen, setIsNewCategoryModalOpen] = useState(false);
@@ -24,10 +32,18 @@ const SavedContent: React.FC = () => {
         loadData();
     }, []);
 
+    // useEffect(() => {
+    //     dispatch(fetchSavedLinksAsync('1'));
+    // }, [dispatch]);
+
+    // useEffect(() => {
+    //     dispatch(fetchTagsAsync());
+    // }, [dispatch]);
+
     const handleClick = (name: string) => {
         setSelectedCategory(name);
         setIsNewLinkModalOpen(true);
-      };
+    };
 
     return (
         <div>

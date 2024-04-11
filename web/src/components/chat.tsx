@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useAppDispatch, useAppSelector } from "@/app/store";
+import { useAppSelector, useAppDispatch } from '@/app/hooks';
 import Searchbar from './searchbar';
 import { fetchMessagesAsync, addMessageAsync } from '@/store/messagesSlice';
 import Image from 'next/image';
@@ -12,8 +12,7 @@ env.allowLocalModels = false;
 
 const Chat: React.FC = () => {
     const dispatch = useAppDispatch();
-    const messages = useAppSelector((state) => state.messages.messages || []);
-    const status = useAppSelector((state) => state.messages.status);
+    const { messages, status, error } = useAppSelector((state) => state.messages);
     const [message, setMessage] = useState('');
     const chatEndRef = useRef<HTMLDivElement>(null);
     const tag = "TAG_HERE"
@@ -22,9 +21,9 @@ const Chat: React.FC = () => {
         content: string;
     }
 
-    useEffect(() => {
-        dispatch(fetchMessagesAsync('user123'));
-    }, [dispatch]);
+    // useEffect(() => {
+    //     dispatch(fetchMessagesAsync('user123'));
+    // }, [dispatch]);
 
     useEffect(() => {
 
@@ -84,21 +83,22 @@ const Chat: React.FC = () => {
 
     const sendMessage = (newMessage: string) => {
         if (newMessage.trim() !== '') {
-            const message = {
+            const newMsg = {
                 id: `${Date.now()}`,
                 res: {
                     text: newMessage
                 },
                 user: 'Joe'
             };
-            dispatch(addMessageAsync({ userId: 'user123', message: message }));
+            dispatch(addMessageAsync({ userId: 'user123', message: newMsg }));
             setMessage('');
         }
     };
-    
+
     return (
         <div className="flex flex-col h-full">
             {status === 'loading' && <p>Loading...</p>}
+            {status === 'failed' && <div>Error: {error}</div>}
             <div className="flex-grow overflow-auto">
                 {messages.map(msg => (
                     <div className="mb-3" key={msg.id}>
