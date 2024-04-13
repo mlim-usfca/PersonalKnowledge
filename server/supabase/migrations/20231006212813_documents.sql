@@ -5,7 +5,8 @@ create table document_sections (
   id bigint primary key generated always as identity,
   link_id bigint not null references links (id),
   content text not null,
-  embedding vector (384)
+  embedding vector (384),
+  tag text
 );
 
 create index on document_sections using hnsw (embedding vector_ip_ops);

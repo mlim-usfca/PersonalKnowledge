@@ -7,8 +7,8 @@ env.useBrowserCache = false;
 env.allowLocalModels = false;
 
 const generateEmbedding = await pipeline(
-  'feature-extraction',
-  'Supabase/gte-small'
+    'feature-extraction',
+    'Supabase/gte-small'
 );
 
 const supabaseUrl = Deno.env.get('SUPABASE_URL');
@@ -17,13 +17,13 @@ const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY');
 Deno.serve(async (req) => {
   if (!supabaseUrl || !supabaseAnonKey) {
     return new Response(
-      JSON.stringify({
-        error: 'Missing environment variables.',
-      }),
-      {
-        status: 500,
-        headers: { 'Content-Type': 'application/json' },
-      }
+        JSON.stringify({
+          error: 'Missing environment variables.',
+        }),
+        {
+          status: 500,
+          headers: { 'Content-Type': 'application/json' },
+        }
     );
   }
 
@@ -31,11 +31,11 @@ Deno.serve(async (req) => {
 
   if (!authorization) {
     return new Response(
-      JSON.stringify({ error: `No authorization header passed` }),
-      {
-        status: 500,
-        headers: { 'Content-Type': 'application/json' },
-      }
+        JSON.stringify({ error: `No authorization header passed` }),
+        {
+          status: 500,
+          headers: { 'Content-Type': 'application/json' },
+        }
     );
   }
 
@@ -53,10 +53,10 @@ Deno.serve(async (req) => {
   const { ids, table, contentColumn, embeddingColumn } = await req.json();
 
   const { data: rows, error: selectError } = await supabase
-    .from(table)
-    .select(`id, ${contentColumn}` as '*')
-    .in('id', ids)
-    .is(embeddingColumn, null);
+      .from(table)
+      .select(`id, ${contentColumn}` as '*')
+      .in('id', ids)
+      .is(embeddingColumn, null);
 
   if (selectError) {
     return new Response(JSON.stringify({ error: selectError }), {
@@ -81,25 +81,25 @@ Deno.serve(async (req) => {
     const embedding = JSON.stringify(Array.from(output.data));
 
     const { error } = await supabase
-      .from(table)
-      .update({
-        [embeddingColumn]: embedding,
-      })
-      .eq('id', id);
+        .from(table)
+        .update({
+          [embeddingColumn]: embedding,
+        })
+        .eq('id', id);
 
     if (error) {
       console.error(
-        `Failed to save embedding on '${table}' table with id ${id}`
+          `Failed to save embedding on '${table}' table with id ${id}`
       );
     }
 
     console.log(
-      `Generated embedding ${JSON.stringify({
-        table,
-        id,
-        contentColumn,
-        embeddingColumn,
-      })}`
+        `Generated embedding ${JSON.stringify({
+          table,
+          id,
+          contentColumn,
+          embeddingColumn,
+        })}`
     );
   }
 
