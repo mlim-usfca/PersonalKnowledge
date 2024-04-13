@@ -3,6 +3,12 @@ import { useAppDispatch, useAppSelector } from "@/app/store";
 import Searchbar from './searchbar';
 import { fetchMessagesAsync, addMessageAsync } from '@/store/messagesSlice';
 import Image from 'next/image';
+import {supabase} from "@/components/supabase.tsx";
+import { env, pipeline } from '@xenova/transformers';
+
+// Configuration for Deno runtime
+env.useBrowserCache = false;
+env.allowLocalModels = false;
 
 const Chat: React.FC = () => {
     const dispatch = useAppDispatch();
@@ -10,13 +16,70 @@ const Chat: React.FC = () => {
     const status = useAppSelector((state) => state.messages.status);
     const [message, setMessage] = useState('');
     const chatEndRef = useRef<HTMLDivElement>(null);
+    const tag = "TAG_HERE"
+
+    interface Message {
+        content: string;
+    }
 
     useEffect(() => {
         dispatch(fetchMessagesAsync('user123'));
     }, [dispatch]);
 
     useEffect(() => {
+
         chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+
+        if(messages.length === 0) return;
+
+        const lastMessage = messages[messages.length - 1];
+        const txt = lastMessage.res.text;
+
+        // parse all the messages into the Message interface and make a list
+        const formatted_messages: Message[] = [];
+        messages.forEach((msg) => {
+            formatted_messages.push({ role: "user", content: msg.res.text });
+        });
+
+        const edge = async () => {
+
+                const generateEmbedding = await pipeline(
+                    'feature-extraction',
+                    'Supabase/gte-small'
+                );
+
+                const output = await generateEmbedding(txt, {
+                    pooling: 'mean',
+                    normalize: true,
+                });
+
+                const embedding = JSON.stringify(Array.from(output.data));
+
+                const {
+                    data: { session },
+                } = await supabase.auth.getSession();
+
+                if (!session) {
+                    return;
+                }
+
+            const stream = await supabase.functions.invoke('chat', {
+                body: JSON.stringify({ embedding: embedding, tag: tag, messages: formatted_messages })
+            });
+
+
+            const reader = stream.data;
+            if (!reader) {
+                console.error('No reader');
+                return;
+            }
+            
+            console.log("reader",reader);
+            sendMessage(reader.toString());
+
+        }
+
+        edge();
     }, [messages]);
 
     const sendMessage = (newMessage: string) => {
@@ -26,7 +89,7 @@ const Chat: React.FC = () => {
                 res: {
                     text: newMessage
                 },
-                user: 'John'
+                user: 'Joe'
             };
             dispatch(addMessageAsync({ userId: 'user123', message: message }));
             setMessage('');
