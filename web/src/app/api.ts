@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from 'axios';
-import { Message, UserData, SavedLink, Tags } from './interfaces';
-import { mockUser, mockMessages, mockLinks, mockTags } from './mockData';
+import { Message, UserData, SavedLink, SavedCategory, Tags } from './interfaces';
+import { mockUser, mockMessages, mockLinks, mockTags, mockCategories } from './mockData';
 
 const useMockData = true;
 
@@ -48,6 +48,20 @@ export const addMessage = async (userId: string, message: Message): Promise<Mess
         return response.data;
     } catch (error) {
         console.error("An error occurred while adding message:", error);
+        throw error;
+    }
+};
+
+export const fetchSavedCategories = async (userId: string): Promise<SavedCategory[]> => {
+    if (useMockData) {
+        return mockCategories;
+    }
+
+    try {
+        const response: AxiosResponse<SavedCategory[]> = await API.get(`/users/${userId}/saved-links`);
+        return response.data;
+    } catch (error) {
+        console.error("An error occurred while fetching saved links:", error);
         throw error;
     }
 };

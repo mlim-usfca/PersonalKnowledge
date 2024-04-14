@@ -7,6 +7,7 @@ import { supabase } from './supabase';
 
 type NewLinkModalProps = {
   onClose: () => void;
+  category: string;
 };
 
 // type for intent options
@@ -39,27 +40,38 @@ const NewLinkModal: React.FC<NewLinkModalProps> = (props) => {
       }
   
       // Now, call the 'extractContent' edge function
-      const { data: data, error: extractError } = await supabase.functions.invoke('extractContent', {
-        body: JSON.stringify({ url: link }) 
-      });
+      // const { data: data, error: extractError } = await supabase.functions.invoke('extractContent', {
+      //   body: JSON.stringify({ url: link }) 
+      // });
   
-      if (extractError) {
-        alert("Extract content failed");
-        console.error('Extract content failed:', extractError);
-        return;
-      }
-      console.log("Extracted content:", data);
+      // if (extractError) {
+      //   alert("Extract content failed");
+      //   console.error('Extract content failed:', extractError);
+      //   return;
+      // }
+      // console.log("Extracted content:", data);
   
       // Proceed to insert the link into the database, including the extracted content
       const { error: insertError } = await supabase
         .from('links')
         .insert([
-          { link: link, owner: user.id, purpose: intent, owner_email: user.email, content: data.content }
+          { link: link, owner: user.id, purpose: intent, owner_email: user.email}
         ]);
-  
+
       if (insertError) {
-        alert("Submit failed");
+        alert("Submit1 failed");
         console.error('Submission failed:', insertError);
+      }
+      
+      const { error: insertError2 } = await supabase
+      .from('category_link_relation')
+      .insert([
+        { link: link, category: props.category, creator: user.id}
+      ]);
+  
+      if (insertError2) {
+        alert("Submit2 failed");
+        console.error('Submission2 failed:', insertError);
       } else {
         // Assuming `props.onClose` is a function to close a modal or dialog
         if (props && typeof props.onClose === 'function') {
@@ -93,7 +105,7 @@ const NewLinkModal: React.FC<NewLinkModalProps> = (props) => {
           </svg>
         </button>
         <h3 className="text-3xl font-bold leading-6 font-medium text-gray-900 mt-5 mb-3">
-          Save New Content
+          Save New Link
         </h3>
         <form
           className="bg-white rounded pt-6 pb-6"
