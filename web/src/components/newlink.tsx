@@ -40,16 +40,16 @@ const NewLinkModal: React.FC<NewLinkModalProps> = (props) => {
       }
   
       // Now, call the 'extractContent' edge function
-      // const { data: data, error: extractError } = await supabase.functions.invoke('extractContent', {
-      //   body: JSON.stringify({ url: link }) 
-      // });
+      const { data: data, error: extractError } = await supabase.functions.invoke('extractContent', {
+        body: JSON.stringify({ url: link }) 
+      });
   
-      // if (extractError) {
-      //   alert("Extract content failed");
-      //   console.error('Extract content failed:', extractError);
-      //   return;
-      // }
-      // console.log("Extracted content:", data);
+      if (extractError) {
+        alert("Extract content failed");
+        console.error('Extract content failed:', extractError);
+        return;
+      }
+      console.log("Extracted content:", data);
   
       // Proceed to insert the link into the database, including the extracted content
       const { error: insertError } = await supabase
@@ -127,13 +127,6 @@ const NewLinkModal: React.FC<NewLinkModalProps> = (props) => {
           <label className="block text-gray-700 text-sm font-bold my-2">
             Intent
           </label>
-          {/* <input
-            className="block w-full px-4 py-2 mt-2 text-gray-700 placeholder-gray-400 focus:outline-
-            none focus:ring-blue-500 focus:border-blue-500 sm:text-sm border border-gray-200 rounded-md"
-            placeholder="Your intent"
-            value={intent}
-            onChange={(e) => setIntent(e.target.value)}
-          /> */}
           <Listbox value={intent} onChange={setIntent}>
             <div className="relative mt-1">
               <Listbox.Button className="relative w-full cursor-default rounded-lg bg-white py-2 pl-3 pr-10 text-left shadow-md focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white/75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300 sm:text-sm">
