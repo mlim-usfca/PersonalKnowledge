@@ -1,6 +1,7 @@
 import axios, { AxiosResponse } from 'axios';
 import { Message, UserData, SavedLink, SavedCategory, Tags } from './interfaces';
 import { mockUser, mockMessages, mockLinks, mockTags, mockCategories } from './mockData';
+import { supabase } from '../components/supabase';
 
 const useMockData = true;
 
@@ -53,13 +54,65 @@ export const addMessage = async (userId: string, message: Message): Promise<Mess
 };
 
 export const fetchSavedCategories = async (userId: string): Promise<SavedCategory[]> => {
-    if (useMockData) {
-        return mockCategories;
-    }
+    // if (useMockData) {
+    //     return mockCategories;
+    // }
 
     try {
-        const response: AxiosResponse<SavedCategory[]> = await API.get(`/users/${userId}/saved-links`);
-        return response.data;
+        let userCategories: SavedCategory[] = [];
+        const { data: { user } } = await supabase.auth.getUser();
+  
+        if (!user) {
+            alert('User must be logged in to submit links.');
+            return userCategories;
+        }
+        const { data:categoryData, error: categoryError } = await supabase
+        .from('categories')
+        .select()
+        .eq('user_id', user.id);
+        if (!categoryData) {
+            alert('User does not have any category!');
+            return userCategories;
+        }
+
+        let links: SavedLink[] = [];
+        const { data:linkData, error:linkerror } = await supabase
+        .from('category_link_relation')
+        .select()
+        .eq('creator', user.id);
+
+        if (!linkData) {
+            alert('User does not have any link!');
+        } else {
+            linkData.forEach( (row) => {
+                let categoryLink = (): SavedLink => ({
+                    id: '',
+                    title: '',
+                    url: row.link,
+                    tags: [],
+                    category: row.category
+                });
+                links.push(categoryLink());
+            });
+        }
+
+        categoryData.forEach( (element) => {
+            let templinks: SavedLink[] = [];
+            
+            links.forEach( (row) => {
+                if (row.category == element.category_name){
+                    templinks.push(row);
+                }
+            });
+
+            let userCategory = (): SavedCategory => ({
+                id: element.id,
+                name: element.category_name,
+                links: templinks,
+            });
+            userCategories.push(userCategory());
+        });
+        return userCategories;
     } catch (error) {
         console.error("An error occurred while fetching saved links:", error);
         throw error;

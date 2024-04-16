@@ -40,16 +40,16 @@ const NewLinkModal: React.FC<NewLinkModalProps> = (props) => {
       }
   
       // Now, call the 'extractContent' edge function
-      const { data: data, error: extractError } = await supabase.functions.invoke('extractContent', {
-        body: JSON.stringify({ url: link }) 
-      });
+      // const { data: data, error: extractError } = await supabase.functions.invoke('extractContent', {
+      //   body: JSON.stringify({ url: link }) 
+      // });
   
-      if (extractError) {
-        alert("Extract content failed");
-        console.error('Extract content failed:', extractError);
-        return;
-      }
-      console.log("Extracted content:", data);
+      // if (extractError) {
+      //   alert("Extract content failed");
+      //   console.error('Extract content failed:', extractError);
+      //   return;
+      // }
+      // console.log("Extracted content:", data);
   
       // Proceed to insert the link into the database, including the extracted content
       const { error: insertError } = await supabase
@@ -124,8 +124,19 @@ const NewLinkModal: React.FC<NewLinkModalProps> = (props) => {
             value={link}
             onChange={(e) => setLink(e.target.value)}
           />
-          <label className="block text-gray-700 text-sm font-bold my-2">
-            Intent
+          <label className="block text-gray-700 text-sm font-bold mb-2">
+            Category
+          </label>
+          <input
+            className="block w-full px-4 py-2 mt-2 text-gray-700 placeholder-gray-400 focus:outline-
+            none focus:ring-blue-500 focus:border-blue-500 sm:text-sm border border-gray-200 rounded-md"
+            placeholder={props.category}
+            value={props.category}
+            onChange={(e) => setLink(e.target.value)}
+            readOnly
+          />
+          {/* <label className="block text-gray-700 text-sm font-bold my-2">
+            Category
           </label>
           <Listbox value={intent} onChange={setIntent}>
             <div className="relative mt-1">
@@ -174,7 +185,7 @@ const NewLinkModal: React.FC<NewLinkModalProps> = (props) => {
                 </Listbox.Options>
               </Transition>
             </div>
-          </Listbox>
+          </Listbox> */}
           <button
             className="hover:bg-indigo-700 bg-indigo-600 text-white font-semibold my-2 py-2 px-4 w-full border border-gray-300 rounded shadow"
             type="button"

@@ -28,6 +28,7 @@ export interface SavedLink {
     title: string;
     url: string;
     tags: Tags[];
+    category: string;
 }
 
 export interface AIResponse {
