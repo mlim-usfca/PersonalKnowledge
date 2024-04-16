@@ -135,9 +135,9 @@ backend = "postgres"
 
 [auth.external.google]
 enabled = true
-client_id = "709678869180-84gol4sjfkq41kk9o5anldk7rvqsqb39.apps.googleusercontent.com"
+client_id = "your_google_id"
 # DO NOT commit your OAuth provider secret to git. Use environment variable substitution instead:
-secret = "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"
+secret = "your_secred"
 # Overrides the default auth redirectUrl.
 redirect_uri = "http://localhost:54321/auth/v1/callback"
 # Overrides the default auth provider URL. Used to support self-hosted gitlab, single-tenant Azure,
