@@ -31,9 +31,13 @@ export interface SavedLink {
     category: string;
 }
 
-export interface AIResponse {
+export interface Category {
     id: string;
-    query: string;
-    response: string;
+  name: string;
 }
 
+export interface Chat {
+    id: string;
+    messages: Message[];
+    category: Category;
+}

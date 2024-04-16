@@ -1,4 +1,4 @@
-import { UserData, Message, SavedLink, SavedCategory, Tags, AIResponse } from './interfaces';
+import { UserData, Message, SavedLink, SavedCategory, Tags } from './interfaces';
 
 export const mockUser: UserData = {
     id: 'user123',
@@ -25,15 +25,9 @@ export const mockMessages: Message[] = [
 
 export const mockTags: Tags[] = [
     { id: '1', name: 'Restaurants near me', emoji: '🍔' },
-    // { id: '2', name: 'Relativity Theory', emoji: '🌌' },
     { id: '3', name: 'Sports', emoji: '⚽️' },
-    // { id: '4', name: 'Cooking', emoji: '🍳' },
     { id: '5', name: 'Science', emoji: '🔬' },
-    // { id: '7', name: 'to read', emoji: '📚' },
-    // { id: '8', name: 'to watch', emoji: '📺' },
-    // { id: '9', name: 'to listen', emoji: '🎧' },
     { id: '10', name: 'to eat', emoji: '🍽️' },
-    // { id: '11', name: 'to buy', emoji: '🛒' },
     { id: '12', name: 'to visit', emoji: '🗺️' },
 ];
 
@@ -44,7 +38,8 @@ export const mockLinks: SavedLink[] = [
         url: 'https://www.burger.com',
         tags: [
             { id: '10', name: 'to eat', emoji: '🍽️' }
-        ]
+        ],
+        category: 'Food'
     },
     {
         id: 'link2',
@@ -52,7 +47,8 @@ export const mockLinks: SavedLink[] = [
         url: 'https://www.relativity.com',
         tags: [
             { id: '12', name: 'to visit', emoji: '🗺️' }
-        ]
+        ],
+        category: 'Theory'
     },
     {
         id: 'link3',
@@ -60,7 +56,8 @@ export const mockLinks: SavedLink[] = [
         url: 'https://www.sports.com',
         tags: [
             { id: '12', name: 'to visit', emoji: '🗺️' }
-        ]
+        ],
+        category: 'Sport'
     }
 ];
 
@@ -76,7 +73,8 @@ export const mockCategories: SavedCategory[] = [
                 tags: [
                     { id: '1', name: 'Cooking', emoji: '🍳' },
                     { id: '2', name: 'Food', emoji: '🍔' }
-                ]
+                ],
+                category: 'Food'
             },
             {
                 id: 'link3',
@@ -85,7 +83,8 @@ export const mockCategories: SavedCategory[] = [
                 tags: [
                     { id: '3', name: 'Sports', emoji: '⚽️' },
                     { id: '5', name: 'Teams', emoji: '🏆' }
-                ]
+                ],
+                category: 'Sport'
             }
         ]
     },
@@ -100,7 +99,8 @@ export const mockCategories: SavedCategory[] = [
                 tags: [
                     { id: '3', name: 'Science', emoji: '🔬' },
                     { id: '4', name: 'Physics', emoji: '⚛️' }
-                ]
+                ],
+                category: 'Theory'
             },
         ]
     },
@@ -115,15 +115,17 @@ export const mockCategories: SavedCategory[] = [
                 tags: [
                     { id: '3', name: 'Sports', emoji: '⚽️' },
                     { id: '5', name: 'Teams', emoji: '🏆' }
-                ]
+                ],
+                category: 'Sport'
             },
         ]
     }
 ];
 
-export const mockAIResponse: AIResponse = {
-    id: 'response1',
-    query: 'What is relativity?',
-    response: 'Relativity is a theory in physics about the effects of motion on measurements of space and time...'
+export const mockAIResponse: Message = {
+    id: `${Date.now() - Math.random()}`,
+    res: {
+        text: 'Relativity is a theory in physics about the effects of motion on measurements of space and time...'
+    },
+    user: 'AI'
 };
-
