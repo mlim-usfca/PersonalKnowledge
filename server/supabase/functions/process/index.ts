@@ -8,14 +8,19 @@ const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY');
 export const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers':
-      'authorization, x-client-info, apikey, content-type',
+      'authorization, x-client-info, apikey, Content-Type',
+};
+
+const responseHeaders = {
+  ...corsHeaders,
+  'Content-Type': 'application/json',
 };
 
 console.log("Hello from Functions!");
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: corsHeaders })
+    return new Response('ok', { headers: responseHeaders, })
   }
 
   if (!supabaseUrl || !supabaseAnonKey) {
@@ -25,7 +30,7 @@ Deno.serve(async (req) => {
         }),
         {
           status: 500,
-          headers: { 'Content-Type': 'application/json' },
+          headers: responseHeaders,
         }
     );
   }
@@ -37,7 +42,7 @@ Deno.serve(async (req) => {
         JSON.stringify({ error: `No authorization header passed` }),
         {
           status: 500,
-          headers: { 'Content-Type': 'application/json' },
+          headers: responseHeaders,
         }
     );
   }
@@ -62,10 +67,10 @@ Deno.serve(async (req) => {
 
   if (!link_id) {
     return new Response(
-        JSON.stringify({ error: 'no link_id or extracted_content provided in request body' }),
+        JSON.stringify({ error: 'no link_id provided in request body' }),
         {
           status: 500,
-          headers: { 'Content-Type': 'application/json' },
+          headers: responseHeaders,
         }
     );
   }
@@ -77,23 +82,23 @@ Deno.serve(async (req) => {
   if (err) {
     return new Response(
         JSON.stringify({
-          error: err.message,
+          error: `Error fetching data: ${err.message}`,
         }),
         {
           status: 500,
-          headers: {'Content-Type': 'application/json'},
+          headers: responseHeaders,
         }
     );
   }
 
-  if (!data) {
+  if (!data || data.length === 0) {
     return new Response(
         JSON.stringify({
-          error: 'No data found',
+          error: 'No data found for the provided link_id',
         }),
         {
           status: 404,
-          headers: {'Content-Type': 'application/json'},
+          headers: responseHeaders,
         }
     );
   }
@@ -109,7 +114,7 @@ Deno.serve(async (req) => {
         }),
         {
           status: 404,
-          headers: {'Content-Type': 'application/json'},
+          headers: responseHeaders,
         }
     );
   }
@@ -129,7 +134,7 @@ Deno.serve(async (req) => {
         JSON.stringify({ error: 'Failed to save document sections' }),
         {
           status: 500,
-          headers: { 'Content-Type': 'application/json' },
+          headers: responseHeaders,
         }
     );
   }
@@ -138,8 +143,11 @@ Deno.serve(async (req) => {
       `Saved ${processedMd.sections.length} sections for link '${link_id}'`
   );
 
-  return new Response(null, {
-    status: 204,
-    headers: { 'Content-Type': 'application/json' },
-  });
+  return new Response(
+    JSON.stringify({ message: 'Successfully processed and saved sections' }), // Improved response for success
+    {
+      status: 200,
+      headers: responseHeaders,
+    }
+  );
 });

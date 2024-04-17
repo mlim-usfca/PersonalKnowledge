@@ -59,7 +59,7 @@ const NewLinkModal: React.FC<NewLinkModalProps> = (props) => {
       
       // Check if the insert operation was successful and data is returned
       if (!insertError) {
-        const { data: link_data, error: fetchError } = await supabase
+        const { data: link_data} = await supabase
         .from('links')
         .select('id')
         .eq('link', link);
@@ -72,7 +72,7 @@ const NewLinkModal: React.FC<NewLinkModalProps> = (props) => {
 
         if (processError) {
           alert("process failed");
-          console.error('process failed:', extractError);
+          console.error('process failed:', processError);
           return;
         }
         // Assuming `props.onClose` is a function to close a modal or dialog
