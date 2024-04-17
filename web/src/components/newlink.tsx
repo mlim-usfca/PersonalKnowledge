@@ -3,7 +3,10 @@
 import React, { Fragment, useState } from 'react';
 import { Listbox, Transition } from '@headlessui/react';
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid';
-import { supabase } from './supabase';
+import { pipeline } from "@xenova/transformers";
+import { Document } from "langchain/document";
+import { supabase } from "./supabase";
+import { TokenTextSplitter } from "langchain/text_splitter";
 
 type NewLinkModalProps = {
   onClose: () => void;
@@ -65,16 +68,8 @@ const NewLinkModal: React.FC<NewLinkModalProps> = (props) => {
         .eq('link', link);
         // Assuming 'id' is the name of your auto-generated primary key column
         const linkId = link_data[0].id;
-        console.log("Inserted link ID:", linkId);
-        const { error: processError } = await supabase.functions.invoke('process', {
-          body: JSON.stringify({ extracted_content: data.content, link_id: linkId }) 
-        });
 
-        if (processError) {
-          alert("process failed");
-          console.error('process failed:', processError);
-          return;
-        }
+        await createEmbedding(data.content, linkId);
         // Assuming `props.onClose` is a function to close a modal or dialog
         if (props && typeof props.onClose === 'function') {
           props.onClose();
@@ -202,3 +197,72 @@ const NewLinkModal: React.FC<NewLinkModalProps> = (props) => {
 };
 
 export default NewLinkModal;
+
+async function createEmbedding(extractedContent: string, linkId: string) {
+  try {
+      // Split and embed the extracted content
+      const splitter = new TokenTextSplitter({
+          encodingName: "gpt2",
+          chunkSize: 300,
+          chunkOverlap: 20,
+      });
+
+      const contentChunks = await splitter.splitDocuments([
+          new Document({
+              pageContent: extractedContent,
+              metadata: {
+                  linkId: linkId,
+              },
+          }),
+      ]);
+      // Initialize the pipeline with the desired model
+      const generateEmbedding = await pipeline('feature-extraction', 'Supabase/gte-small');
+
+      // Process each content chunk and generate embeddings
+      const embeddingsPromises = contentChunks.map(async (chunk) => {
+        try {
+          const content = chunk.pageContent;
+          const output = await generateEmbedding(content, {
+            pooling: 'mean',
+            normalize: true,
+          });
+          const embedding = JSON.stringify(Array.from(output.data));
+          return { embedding, content };
+        } catch (error) {
+            console.error("Error generating embedding for chunk:", error);
+            throw error;
+        }
+      });
+
+      // Wait for all embeddings to be generated
+      const embeddings = await Promise.all(embeddingsPromises);
+
+      await storeEmbeddings(embeddings, linkId)
+      
+      console.log("Embeddings created and stored successfully for link ID:", linkId);
+  } catch (error) {
+      console.error("Error creating and storing embeddings:", error);
+      throw error;
+  }
+}
+
+async function storeEmbeddings(embeddings: any[], linkId: string) {
+  try {
+      const { data, error } = await supabase
+          .from("document_sections")
+          .insert(embeddings.map(({ embedding, content }) => ({
+              embedding: embedding,
+              content: content,
+              link_id: linkId
+          })));
+      if (error) {
+          console.error("Error storing embeddings in Supabase:", error);
+          throw error;
+      }
+
+      console.log("Embeddings stored in Supabase successfully.");
+  } catch (error) {
+      console.error("Error storing embeddings in Supabase:", error);
+      throw error;
+  }
+}
