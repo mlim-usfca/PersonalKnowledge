@@ -43,9 +43,9 @@ const NewLinkModal: React.FC<NewLinkModalProps> = (props) => {
       }
   
       // Now, call the 'extractContent' edge function
-      // const { data: data, error: extractError } = await supabase.functions.invoke('extractContent', {
-      //   body: JSON.stringify({ url: link }) 
-      // });
+      const { data: data, error: extractError } = await supabase.functions.invoke('extractContent', {
+        body: JSON.stringify({ url: link }) 
+      });
   
       if (extractError) {
         alert("Extract content failed");
