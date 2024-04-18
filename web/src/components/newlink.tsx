@@ -3,7 +3,10 @@
 import React, { Fragment, useState } from 'react';
 import { Listbox, Transition } from '@headlessui/react';
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid';
-import { supabase } from './supabase';
+import { pipeline } from "@xenova/transformers";
+import { Document } from "langchain/document";
+import { supabase } from "./supabase";
+import { TokenTextSplitter } from "langchain/text_splitter";
 
 type NewLinkModalProps = {
   onClose: () => void;
@@ -40,17 +43,17 @@ const NewLinkModal: React.FC<NewLinkModalProps> = (props) => {
       }
   
       // Now, call the 'extractContent' edge function
-      // const { data: data, error: extractError } = await supabase.functions.invoke('extractContent', {
-      //   body: JSON.stringify({ url: link }) 
-      // });
+      const { data: data, error: extractError } = await supabase.functions.invoke('extractContent', {
+        body: JSON.stringify({ url: link }) 
+      });
   
-      // if (extractError) {
-      //   alert("Extract content failed");
-      //   console.error('Extract content failed:', extractError);
-      //   return;
-      // }
-      // console.log("Extracted content:", data);
-  
+      if (extractError) {
+        alert("Extract content failed");
+        console.error('Extract content failed:', extractError);
+        return;
+      }
+      console.log("Extracted content:", data);
+
       // Proceed to insert the link into the database, including the extracted content
       const { error: insertError } = await supabase
         .from('links')
@@ -58,7 +61,17 @@ const NewLinkModal: React.FC<NewLinkModalProps> = (props) => {
           { link: link, owner: user.id, purpose: intent, owner_email: user.email}
         ]);
 
-      if (insertError) {
+      // Check if the insert operation was successful and data is returned
+      if (!insertError) {
+        const { data: link_data} = await supabase
+        .from('links')
+        .select('id')
+        .eq('link', link);
+        // Assuming 'id' is the name of your auto-generated primary key column
+        const linkId = link_data[0].id;
+
+        await createEmbedding(data.content, linkId);
+      } else {
         alert("Submit1 failed");
         console.error('Submission failed:', insertError);
       }
@@ -71,13 +84,14 @@ const NewLinkModal: React.FC<NewLinkModalProps> = (props) => {
   
       if (insertError2) {
         alert("Submit2 failed");
-        console.error('Submission2 failed:', insertError);
+        console.error('Submission2 failed:', insertError2);
       } else {
         // Assuming `props.onClose` is a function to close a modal or dialog
         if (props && typeof props.onClose === 'function') {
           props.onClose();
         }
       }
+  
     } catch (error) {
       alert('Couldn\'t submit, try again');
       console.error(error);
@@ -200,3 +214,72 @@ const NewLinkModal: React.FC<NewLinkModalProps> = (props) => {
 };
 
 export default NewLinkModal;
+
+async function createEmbedding(extractedContent: string, linkId: string) {
+  try {
+      // Split and embed the extracted content
+      const splitter = new TokenTextSplitter({
+          encodingName: "gpt2",
+          chunkSize: 300,
+          chunkOverlap: 20,
+      });
+
+      const contentChunks = await splitter.splitDocuments([
+          new Document({
+              pageContent: extractedContent,
+              metadata: {
+                  linkId: linkId,
+              },
+          }),
+      ]);
+      // Initialize the pipeline with the desired model
+      const generateEmbedding = await pipeline('feature-extraction', 'Supabase/gte-small');
+
+      // Process each content chunk and generate embeddings
+      const embeddingsPromises = contentChunks.map(async (chunk) => {
+        try {
+          const content = chunk.pageContent;
+          const output = await generateEmbedding(content, {
+            pooling: 'mean',
+            normalize: true,
+          });
+          const embedding = JSON.stringify(Array.from(output.data));
+          return { embedding, content };
+        } catch (error) {
+            console.error("Error generating embedding for chunk:", error);
+            throw error;
+        }
+      });
+
+      // Wait for all embeddings to be generated
+      const embeddings = await Promise.all(embeddingsPromises);
+
+      await storeEmbeddings(embeddings, linkId)
+      
+      console.log("Embeddings created and stored successfully for link ID:", linkId);
+  } catch (error) {
+      console.error("Error creating and storing embeddings:", error);
+      throw error;
+  }
+}
+
+async function storeEmbeddings(embeddings: any[], linkId: string) {
+  try {
+      const { data, error } = await supabase
+          .from("document_sections")
+          .insert(embeddings.map(({ embedding, content }) => ({
+              embedding: embedding,
+              content: content,
+              link_id: linkId
+          })));
+      if (error) {
+          console.error("Error storing embeddings in Supabase:", error);
+          throw error;
+      }
+
+      console.log("Embeddings stored in Supabase successfully.");
+  } catch (error) {
+      console.error("Error storing embeddings in Supabase:", error);
+      throw error;
+  }
+}

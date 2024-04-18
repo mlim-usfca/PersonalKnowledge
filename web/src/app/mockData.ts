@@ -6,21 +6,21 @@ export const mockUser: UserData = {
 };
 
 export const mockMessages: Message[] = [
-    {
-        id: '1',
-        res: {
-            text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam hendrerit pretium eros quis elementum. Suspendisse libero neque...',
-        },
-        user: 'John'
-    },
-    {
-        id: '2',
-        res: {
-            text:
-                'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla facilisis, mi sit amet aliquet consequat, ante tortor hendrerit urna, vitae imperdiet tellus ligula interdum tortor. Mauris fringilla et quam in accumsan. Nunc quis nulla lacus. Integer tincidunt arcu at leo pulvinar suscipit non id sapien. Duis in nisi dui. Cras ullamcorper tempus mollis. In nulla leo, porttitor id maximus non, fermentum mattis ipsum. Vivamus fermentum luctus velit, non volutpat mauris dapibus ac. Nulla luctus eget augue in congue. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla facilisis, mi sit amet aliquet consequat, ante tortor hendrerit urna, vitae imperdiet tellus ligula interdum tortor. Mauris fringilla et',
-        },
-        user: 'AI'
-    }
+    // {
+    //     id: '1',
+    //     res: {
+    //         text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam hendrerit pretium eros quis elementum. Suspendisse libero neque...',
+    //     },
+    //     user: 'John'
+    // },
+    // {
+    //     id: '2',
+    //     res: {
+    //         text:
+    //             'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla facilisis, mi sit amet aliquet consequat, ante tortor hendrerit urna, vitae imperdiet tellus ligula interdum tortor. Mauris fringilla et quam in accumsan. Nunc quis nulla lacus. Integer tincidunt arcu at leo pulvinar suscipit non id sapien. Duis in nisi dui. Cras ullamcorper tempus mollis. In nulla leo, porttitor id maximus non, fermentum mattis ipsum. Vivamus fermentum luctus velit, non volutpat mauris dapibus ac. Nulla luctus eget augue in congue. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla facilisis, mi sit amet aliquet consequat, ante tortor hendrerit urna, vitae imperdiet tellus ligula interdum tortor. Mauris fringilla et',
+    //     },
+    //     user: 'AI'
+    // }
 ];
 
 export const mockTags: Tags[] = [

@@ -55,6 +55,7 @@ export function processMarkdown(
   content: string,
   maxSectionLength = 2500
 ): ProcessedMd {
+  console.log("processmarkdown starts, content is :", content);
   const mdTree = fromMarkdown(content);
 
   if (!mdTree) {

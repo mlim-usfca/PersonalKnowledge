@@ -1,6 +1,6 @@
 # A string used to distinguish different Supabase projects on the same host. Defaults to the
 # working directory name when running `supabase init`.
-project_id = "chatgpt-your-files"
+project_id = "dragonai"
 
 [api]
 enabled = true
@@ -132,3 +132,14 @@ port = 54327
 vector_port = 54328
 # Configure one of the supported backends: `postgres`, `bigquery`.
 backend = "postgres"
+
+[auth.external.google]
+enabled = true
+client_id = "your_google_id"
+# DO NOT commit your OAuth provider secret to git. Use environment variable substitution instead:
+secret = "your_secred"
+# Overrides the default auth redirectUrl.
+redirect_uri = "http://localhost:54321/auth/v1/callback"
+# Overrides the default auth provider URL. Used to support self-hosted gitlab, single-tenant Azure,
+# or any other third-party OIDC providers.
+url = ""

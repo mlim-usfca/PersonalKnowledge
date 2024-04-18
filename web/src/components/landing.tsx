@@ -23,12 +23,7 @@ const Landing: React.FC = () => {
           <Image src="/DragonAI.png" alt="DragonAI Logo" width={300} height={300} className="mt-8 mb-4"/>
         </div>
         <div>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed ut perspiciatis 
-          unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, 
-          totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto 
-          beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit 
-          aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione
-          voluptatem sequi nesciunt.
+
         </div>
         <div className="flex justify-center my-10 text-lg">
           <button onClick={() => handleSignUp()} className='text-indigo-600 hover:text-indigo-400'>

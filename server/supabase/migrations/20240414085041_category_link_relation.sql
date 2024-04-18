@@ -1,6 +1,6 @@
 alter table "public"."categories" drop constraint "categories_pkey";
 
-alter table "public"."links" drop constraint "links_pkey";
+alter table "public"."links" drop constraint "links_pkey" cascade;
 
 drop index if exists "public"."categories_pkey";
 

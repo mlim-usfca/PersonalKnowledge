@@ -13,8 +13,6 @@ export const corsHeaders = {
     'authorization, x-client-info, apikey, content-type',
 };
 
-console.log("Hello from Functions!");
-
 async function extractWebContent(url: string) : Promise<string>{
   const response = await fetch(url);
   const html = await response.text();
