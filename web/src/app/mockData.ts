@@ -1,4 +1,4 @@
-import { UserData, Message, SavedLink, Tags, AIResponse } from './interfaces';
+import { UserData, Message, SavedLink, SavedCategory, Tags, AIResponse } from './interfaces';
 
 export const mockUser: UserData = {
     id: 'user123',
@@ -57,6 +57,63 @@ export const mockLinks: SavedLink[] = [
         tags: [
             { id: '3', name: 'Sports', emoji: '⚽️' },
             { id: '5', name: 'Teams', emoji: '🏆' }
+        ]
+    }
+];
+
+export const mockCategories: SavedCategory[] = [
+    {
+        id: 1,
+        name: 'Food',
+        links: [
+            {
+                id: 'link1',
+                title: 'How to make a burger',
+                url: 'https://www.burger.com',
+                tags: [
+                    { id: '1', name: 'Cooking', emoji: '🍳' },
+                    { id: '2', name: 'Food', emoji: '🍔' }
+                ]
+            },
+            {
+                id: 'link3',
+                title: 'Top 10 sports teams',
+                url: 'https://www.sports.com',
+                tags: [
+                    { id: '3', name: 'Sports', emoji: '⚽️' },
+                    { id: '5', name: 'Teams', emoji: '🏆' }
+                ]
+            }
+        ]
+    },
+    {
+        id: 2,
+        name: 'Theory',
+        links: [
+            {
+                id: 'link2',
+                title: 'Relativity Theory explained',
+                url: 'https://www.relativity.com',
+                tags: [
+                    { id: '3', name: 'Science', emoji: '🔬' },
+                    { id: '4', name: 'Physics', emoji: '⚛️' }
+                ]
+            },
+        ]
+    },
+    {
+        id: 3,
+        name: 'Sport',
+        links: [
+            {
+                id: 'link3',
+                title: 'Top 10 sports teams',
+                url: 'https://www.sports.com',
+                tags: [
+                    { id: '3', name: 'Sports', emoji: '⚽️' },
+                    { id: '5', name: 'Teams', emoji: '🏆' }
+                ]
+            },
         ]
     }
 ];

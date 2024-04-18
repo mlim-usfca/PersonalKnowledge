@@ -10,6 +10,7 @@ import { TokenTextSplitter } from "langchain/text_splitter";
 
 type NewLinkModalProps = {
   onClose: () => void;
+  category: string;
 };
 
 // type for intent options
@@ -42,9 +43,9 @@ const NewLinkModal: React.FC<NewLinkModalProps> = (props) => {
       }
   
       // Now, call the 'extractContent' edge function
-      const { data: data, error: extractError } = await supabase.functions.invoke('extractContent', {
-        body: JSON.stringify({ url: link }) 
-      });
+      // const { data: data, error: extractError } = await supabase.functions.invoke('extractContent', {
+      //   body: JSON.stringify({ url: link }) 
+      // });
   
       if (extractError) {
         alert("Extract content failed");
@@ -52,14 +53,14 @@ const NewLinkModal: React.FC<NewLinkModalProps> = (props) => {
         return;
       }
       console.log("Extracted content:", data);
-      
+
       // Proceed to insert the link into the database, including the extracted content
       const { error: insertError } = await supabase
         .from('links')
         .insert([
-          { link: link, owner: user.id, purpose: intent, owner_email: user.email, content: data.content }
+          { link: link, owner: user.id, purpose: intent, owner_email: user.email}
         ]);
-      
+
       // Check if the insert operation was successful and data is returned
       if (!insertError) {
         const { data: link_data} = await supabase
@@ -70,13 +71,25 @@ const NewLinkModal: React.FC<NewLinkModalProps> = (props) => {
         const linkId = link_data[0].id;
 
         await createEmbedding(data.content, linkId);
+      } else {
+        alert("Submit1 failed");
+        console.error('Submission failed:', insertError);
+      }
+      
+      const { error: insertError2 } = await supabase
+      .from('category_link_relation')
+      .insert([
+        { link: link, category: props.category, creator: user.id}
+      ]);
+  
+      if (insertError2) {
+        alert("Submit2 failed");
+        console.error('Submission2 failed:', insertError2);
+      } else {
         // Assuming `props.onClose` is a function to close a modal or dialog
         if (props && typeof props.onClose === 'function') {
           props.onClose();
         }
-      } else {
-        alert("Submit failed");
-        console.error("Insert error:", insertError);
       }
   
     } catch (error) {
@@ -106,7 +119,7 @@ const NewLinkModal: React.FC<NewLinkModalProps> = (props) => {
           </svg>
         </button>
         <h3 className="text-3xl font-bold leading-6 font-medium text-gray-900 mt-5 mb-3">
-          Save New Content
+          Save New Link
         </h3>
         <form
           className="bg-white rounded pt-6 pb-6"
@@ -125,16 +138,20 @@ const NewLinkModal: React.FC<NewLinkModalProps> = (props) => {
             value={link}
             onChange={(e) => setLink(e.target.value)}
           />
-          <label className="block text-gray-700 text-sm font-bold my-2">
-            Intent
+          <label className="block text-gray-700 text-sm font-bold mb-2">
+            Category
           </label>
-          {/* <input
+          <input
             className="block w-full px-4 py-2 mt-2 text-gray-700 placeholder-gray-400 focus:outline-
             none focus:ring-blue-500 focus:border-blue-500 sm:text-sm border border-gray-200 rounded-md"
-            placeholder="Your intent"
-            value={intent}
-            onChange={(e) => setIntent(e.target.value)}
-          /> */}
+            placeholder={props.category}
+            value={props.category}
+            onChange={(e) => setLink(e.target.value)}
+            readOnly
+          />
+          {/* <label className="block text-gray-700 text-sm font-bold my-2">
+            Category
+          </label>
           <Listbox value={intent} onChange={setIntent}>
             <div className="relative mt-1">
               <Listbox.Button className="relative w-full cursor-default rounded-lg bg-white py-2 pl-3 pr-10 text-left shadow-md focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white/75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300 sm:text-sm">
@@ -182,7 +199,7 @@ const NewLinkModal: React.FC<NewLinkModalProps> = (props) => {
                 </Listbox.Options>
               </Transition>
             </div>
-          </Listbox>
+          </Listbox> */}
           <button
             className="hover:bg-indigo-700 bg-indigo-600 text-white font-semibold my-2 py-2 px-4 w-full border border-gray-300 rounded shadow"
             type="button"
