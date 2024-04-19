@@ -1,8 +1,11 @@
-// pages/dashboard.tsx
-import React from 'react';
+'use client';
+
+import React, { useLayoutEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import Head from 'next/head';
 import { Tab } from '@headlessui/react';
 import Chat from '@/components/chat';
+import { useAuth } from '@/app/auth/provider';
 import SavedContent from '@/components/savedcontent';
 import UserPage from '@/components/user';
 import { UserIcon } from '@heroicons/react/20/solid';
@@ -13,6 +16,15 @@ function classNames(...classes: string[]) {
 }
 
 const Dashboard: React.FC = () => {
+  const router = useRouter();
+  const { isAuthenticated } = useAuth();
+
+  useLayoutEffect(() => {
+    if (!isAuthenticated) {
+      router.push('/');
+    }
+  }, []);
+
   return (
     <div className="flex flex-col px-4 sm:px-10 md:px-24 h-screen overflow-hidden">
       <Head>

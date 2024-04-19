@@ -2,6 +2,8 @@
 
 import React, { Fragment, useState, useEffect } from 'react';
 import { useAppSelector, useAppDispatch } from '@/app/hooks';
+import { useAuth } from '@/app/auth/provider';
+import { useRouter } from 'next/navigation';
 import { SavedLink, Tags } from '@/app/interfaces';
 import { addSavedLinkAsync } from '@/store/savedContentSlice';
 import { selectTagByName, fetchTagsAsync } from '@/store/tagsSlice';
@@ -29,7 +31,9 @@ const intents = [
 ]
 
 const NewLinkModal: React.FC<NewLinkModalProps> = (props) => {
+  const { user } = useAuth();
   const dispatch = useAppDispatch();
+  const router = useRouter();
   const { tags, status: tagsStatus, error: tagsError } = useAppSelector(
     (state) => state.tags
   );
@@ -60,15 +64,12 @@ const NewLinkModal: React.FC<NewLinkModalProps> = (props) => {
 
   async function addNewLink() {
     setIsLoading(true);
+
+    if (!user) {
+      router.push('/');
+    }
+    
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-  
-      if (!user) {
-        alert('User must be logged in to submit links.');
-        setIsLoading(false);
-        return;
-      }
-  
       // Now, call the 'extractContent' edge function
       const { data: data, error: extractError } = await supabase.functions.invoke('extractContent', {
         body: JSON.stringify({ url: link }) 
@@ -86,7 +87,7 @@ const NewLinkModal: React.FC<NewLinkModalProps> = (props) => {
       const { error: insertError } = await supabase
         .from('links')
         .insert([
-          { link: link, owner: user.id, purpose: intent, owner_email: user.email}
+          { link: link, owner: user?.id, purpose: intent, owner_email: user?.email}
         ]);
 
       // Check if the insert operation was successful and data is returned
@@ -108,7 +109,7 @@ const NewLinkModal: React.FC<NewLinkModalProps> = (props) => {
       const { error: insertError2 } = await supabase
       .from('category_link_relation')
       .insert([
-        { link: link, category: props.category, creator: user.id}
+        { link: link, category: props.category, creator: user?.id}
       ]);
   
       if (insertError2) {
@@ -129,7 +130,6 @@ const NewLinkModal: React.FC<NewLinkModalProps> = (props) => {
       setIsLoading(false); // Stop loading after the process completes
     }
   }
-  
 
   return (
     <div className="flex items-center justify-center h-screen w-screen fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto z-10">

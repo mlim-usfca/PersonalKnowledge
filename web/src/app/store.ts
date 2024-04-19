@@ -1,5 +1,4 @@
 import { configureStore } from '@reduxjs/toolkit';
-// import { useDispatch, TypedUseSelectorHook, useSelector, useStore } from "react-redux";
 import { chatsReducer } from '@/store/chatsSlice';
 import { savedLinksReducer } from '@/store/savedContentSlice';
 import { tagsReducer } from '@/store/tagsSlice';

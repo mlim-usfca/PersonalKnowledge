@@ -1,8 +1,7 @@
 'use client';
 
-import React, { Fragment, useState } from 'react';
-import { Listbox, Transition } from '@headlessui/react';
-import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid';
+import React, { useState } from 'react';
+import { useAuth } from '@/app/auth/provider';
 import { supabase } from './supabase';
 
 type NewCategoryModalProps = {
@@ -23,6 +22,7 @@ const intents = [
 const NewCategoryModal: React.FC<NewCategoryModalProps> = (props) => {
 
   const [category, setCategory] = useState('');
+  const { user } = useAuth();
 
   const handleSubmit = () => {
     props.onClose();
@@ -30,7 +30,6 @@ const NewCategoryModal: React.FC<NewCategoryModalProps> = (props) => {
 
   async function addNewCategory() {
     try {
-      const { data: { user } } = await supabase.auth.getUser()
       if (!user) {
         alert('User must be logged in to submit links.');
         return;

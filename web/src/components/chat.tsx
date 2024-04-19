@@ -1,5 +1,6 @@
 import React, { Fragment, useState, useEffect, useRef } from 'react';
 import { useAppSelector, useAppDispatch } from '@/app/hooks';
+import { useAuth } from '@/app/auth/provider';
 import Searchbar from './searchbar';
 import { Category } from '@/app/interfaces';
 import { newChat, updateCategory, addMessageToChat, fetchMessageResponseAsync } from '@/store/chatsSlice';
@@ -21,6 +22,7 @@ const categories: Category[] = [
 
 const ChatComponent: React.FC = () => {
     const dispatch = useAppDispatch();
+    const { user } = useAuth();
     const { chat, status, error } = useAppSelector((state) => state.chats);
     const [category, setCategory] = useState<Category>(categories[0]);
     const [messageText, setMessageText] = useState('');
@@ -63,14 +65,6 @@ const ChatComponent: React.FC = () => {
 
                 const embedding = JSON.stringify(Array.from(output.data));
 
-                const {
-                    data: { session },
-                } = await supabase.auth.getSession();
-
-                if (!session) {
-                    return;
-                }
-
             const stream = await supabase.functions.invoke('chat', {
                 body: JSON.stringify({ embedding: embedding, tag: category, messages: formatted_messages })
             });
@@ -104,10 +98,10 @@ const ChatComponent: React.FC = () => {
                 res: {
                     text: newMessage
                 },
-                user: 'Joe'
+                user: user?.email || 'Anonymous'
             };
             dispatch(addMessageToChat(newMsg));
-            await dispatch(fetchMessageResponseAsync({ userId: 'user123', message: newMsg }));
+            await dispatch(fetchMessageResponseAsync({ userId: user?.id || 'user123', message: newMsg }));
             setMessageText('');
         }
     };
