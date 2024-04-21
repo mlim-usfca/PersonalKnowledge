@@ -58,13 +58,20 @@ const ChatComponent: React.FC = () => {
         if (chat && newMessage.trim() !== '') {
             const message = {
                 content: newMessage,
-                role: user?.user_metadata.full_name || 'Anonymous',
+                role: 'user',
             };
             await dispatch(addMessageToChat({ message, chat }));
             await dispatch(processMessagesAsync({ message, chat }));
             setMessageText('');
         }
     };
+
+    const getUserName = () => {
+        if (user) {
+            return user.user_metadata.full_name;
+        }
+        return 'Anonymous';
+    }
 
     useEffect(() => {
         setIsCategoryModalOpen(true);
@@ -164,14 +171,16 @@ const ChatComponent: React.FC = () => {
                     <div className="mb-3">
                         <div className="flex">
                             <div className="h-9 w-9 flex items-center justify-center">
-                            { msg.role === 'Anonymous' || msg.role === 'AI' ?
+                            { getUserName() === 'Anonymous' || msg.role === 'system' ?
                                 <Image className="rounded-full" src="/images/user.png" alt="user" width={35} height={35} />
                                 :
                                 <img src={user?.user_metadata.avatar_url} alt="User Avatar" width={80} height={80} className="rounded-full" />
                             }
                             </div>
-                            <div className={`${ msg.role === 'AI' ? 'bg-purple-200' : 'bg-blue-200' } rounded-lg ml-3 p-2 w-11/12 text-sm`}>
-                                <div className='font-semibold'>{msg.role}</div>
+                            <div className={`${ msg.role === 'system' ? 'bg-purple-200' : 'bg-blue-200' } rounded-lg ml-3 p-2 w-11/12 text-sm`}>
+                                <div className='font-semibold'>
+                                    {msg.role === 'system' ? 'DragonAI' : getUserName()}
+                                </div>
                                 <p className="my-1 text-left text-md">{msg.content}</p>
                             </div>
                         </div>

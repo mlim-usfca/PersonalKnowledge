@@ -97,7 +97,7 @@ export const processMessagesAsync = createAsyncThunk(
 
       let data = <Message>{
         content: 'Sorry, there was an error processing your message. Please try again.',
-        role: 'AI',
+        role: 'system',
       }
 
       const stream = await invokeSupabaseChat(reqBody);
@@ -109,7 +109,7 @@ export const processMessagesAsync = createAsyncThunk(
         console.log("stream", stream);
         data = {
           content: stream.data.toString(),
-          role: 'AI'
+          role: 'system'
         };
       }
       await saveMessage(chat, data);
@@ -167,7 +167,7 @@ const chatsSlice = createSlice({
         state.messagesStatus = 'failed';
         state.messagesError = action.error.message || 'Failed to process message';
         const message = <Message>{
-          role: 'AI',
+          role: 'system',
           content: 'Sorry, I am not able to process your message'
         };
         state.chat.messages.push(message);
