@@ -1,5 +1,5 @@
 import { configureStore } from '@reduxjs/toolkit';
-import { chatsReducer } from '@/store/chatsSlice';
+import { chatsReducer } from '@/app/chats/chatsSlice';
 import { savedLinksReducer } from '@/store/savedContentSlice';
 import { tagsReducer } from '@/store/tagsSlice';
 

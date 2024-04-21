@@ -1,18 +1,19 @@
 import React, { Fragment, useState, useEffect, useRef } from 'react';
 import { useAppSelector, useAppDispatch } from '@/app/hooks';
 import { useAuth } from '@/app/auth/provider';
-import Searchbar from './searchbar';
 import { Category } from '@/app/interfaces';
-import { newChat, updateCategory, addMessageToChat, fetchMessageResponseAsync } from '@/store/chatsSlice';
+import { Message } from '@/app/chats/types';
+import { 
+    addMessageToChat, 
+    processMessagesAsync, 
+    fetchOrCreateChat, 
+    initChatState 
+} from '@/app/chats/chatsSlice';
+import Searchbar from '@/components/searchbar';
+import Loader from '@/components/loader';
 import Image from 'next/image';
-import {supabase} from "@/components/supabase";
-import { env, pipeline } from '@xenova/transformers';
 import { Listbox, Transition } from '@headlessui/react';
 import { CheckIcon, ChevronUpDownIcon, ArrowPathIcon } from '@heroicons/react/20/solid';
-
-// Configuration for Deno runtime
-env.useBrowserCache = false;
-env.allowLocalModels = false;
 
 
 const categories: Category[] = [
@@ -23,92 +24,66 @@ const categories: Category[] = [
 const ChatComponent: React.FC = () => {
     const dispatch = useAppDispatch();
     const { user } = useAuth();
-    const { chat, status, error } = useAppSelector((state) => state.chats);
+    const { chat, messagesStatus, messagesError, status, error } = useAppSelector((state) => state.chats);
+    const [messages, setMessages] = useState<Message[]>([]);
     const [category, setCategory] = useState<Category>(categories[0]);
     const [messageText, setMessageText] = useState('');
     const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(true);
     const chatEndRef = useRef<HTMLDivElement>(null);
-    // const tag = "TAG_HERE"
 
-    interface Message {
-        content: string;
+    const handleCategorySwitch = () => {
+        setIsCategoryModalOpen(true);
+        dispatch(initChatState());
     }
 
-    useEffect(() => {
-        chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }, [[chat.messages.length]]);
-
-    useEffect(() => {
-        if(chat.messages.length === 0) return;
-
-        const lastMessage = chat.messages[chat.messages.length - 1];
-        const txt = lastMessage.res.text;
-
-        // parse all the messages into the Message interface and make a list
-        const formatted_messages: Message[] = [];
-        chat.messages.forEach((msg) => {
-            // formatted_messages.push({ role: "user", content: msg.res.text });
-            formatted_messages.push({ role: "user", content: msg.res.text });
-        });
-
-        const edge = async () => {
-
-                const generateEmbedding = await pipeline(
-                    'feature-extraction',
-                    'Supabase/gte-small'
-                );
-
-                const output = await generateEmbedding(txt, {
-                    pooling: 'mean',
-                    normalize: true,
-                });
-
-                const embedding = JSON.stringify(Array.from(output.data));
-
-            const stream = await supabase.functions.invoke('chat', {
-                body: JSON.stringify({ embedding: embedding, tag: category, messages: formatted_messages })
-            });
-
-
-            const reader = stream.data;
-            if (!reader) {
-                console.error('No reader');
-                return;
-            }
-            
-            console.log("reader",reader);
-            sendMessage(reader.toString());
-
+    const handleNewMessageText = (newMessage: string) => {
+        if (messagesStatus !== 'loading') {
+            sendMessage(newMessage);
+        } else {
+            setMessageText(newMessage);
+            alert('Please wait for the previous message to be processed');
         }
+    }
 
-        edge();
-    }, [chat.messages]);
 
     const addCategoryToChat = async () => {
-        if (category && chat.category.id !== category.id) {
-            await dispatch(newChat(category));
+        if (category && user) {
+            await dispatch(fetchOrCreateChat({category, user}));
+            setMessages(chat.messages);
         }
         setIsCategoryModalOpen(false);
     }
 
     const sendMessage = async (newMessage: string) => {
         if (chat && newMessage.trim() !== '') {
-            const newMsg = {
-                id: `${Date.now() + Math.random()}`,
-                res: {
-                    text: newMessage
-                },
-                user: user?.email || 'Anonymous'
+            const message = {
+                content: newMessage,
+                role: user?.user_metadata.full_name || 'Anonymous',
             };
-            dispatch(addMessageToChat(newMsg));
-            await dispatch(fetchMessageResponseAsync({ userId: user?.id || 'user123', message: newMsg }));
+            await dispatch(addMessageToChat({ message, chat }));
+            await dispatch(processMessagesAsync({ message, chat }));
             setMessageText('');
         }
     };
 
+    useEffect(() => {
+        setIsCategoryModalOpen(true);
+    }, []);
+
+    useEffect(() => {
+        setMessages(chat.messages);
+        chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }, [[chat.messages.length]]);
+
+    useEffect(() => {
+        if (user) {
+            dispatch(fetchOrCreateChat({ category, user }));
+        }
+    }, [category, user]);
+
     return (
         <div className="flex flex-col h-full">
-            {status === 'loading' && <p>Loading...</p>}
+            {status === 'loading' && <Loader />}
             {status === 'failed' && <div>Error: {error}</div>}
             {isCategoryModalOpen && 
                 <div className="flex items-center justify-center h-screen w-screen fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto z-10">
@@ -182,26 +157,41 @@ const ChatComponent: React.FC = () => {
                     </div>
                 </div>
             }
-            <div className="flex-grow overflow-auto">
-                {chat.messages.map(msg => (
-                    <div className="mb-3" key={msg.id + Math.random()}>
+            <div className="flex-grow overflow-auto overflow-y-auto">
+            <>
+            { messages.map((msg, index) => (
+                <div key={index + Math.random()}>
+                    <div className="mb-3">
                         <div className="flex">
-                            <Image className="rounded-full" src="/images/user.png" alt="user" width={24} height={24} />
-                            <div className="ml-2 my-auto">{msg.user}</div>
+                            <div className="h-9 w-9 flex items-center justify-center">
+                            { msg.role === 'Anonymous' || msg.role === 'AI' ?
+                                <Image className="rounded-full" src="/images/user.png" alt="user" width={35} height={35} />
+                                :
+                                <img src={user?.user_metadata.avatar_url} alt="User Avatar" width={80} height={80} className="rounded-full" />
+                            }
+                            </div>
+                            <div className={`${ msg.role === 'AI' ? 'bg-purple-200' : 'bg-blue-200' } rounded-lg ml-3 p-2 w-11/12 text-sm`}>
+                                <div className='font-semibold'>{msg.role}</div>
+                                <p className="my-1 text-left text-md">{msg.content}</p>
+                            </div>
                         </div>
-                        <p className="my-1 text-left text-sm">{msg.res.text}</p>
                     </div>
-                ))}
-                <div ref={chatEndRef} />
+                    <hr className='my-1' />
+                </div>
+            ))}
+            {messagesStatus === 'loading' && <Loader />}
+            {messagesStatus === 'failed' && <div>Error: {messagesError}</div>} 
+            <div ref={chatEndRef} />
+            </>
             </div>
-            <button className="flex justify-end" type="button" onClick={(e) => {
+            <button className="flex justify-end text-gray-400 hover:text-gray-500 my-3" type="button" onClick={(e) => {
                 e.preventDefault();
-                setIsCategoryModalOpen(true)
+                handleCategorySwitch()
               }}>
-                <ArrowPathIcon className="h-6 w-6 text-gray-400 hover:text-gray-500" />
+                <span className='text-sm'>Switch Category</span><ArrowPathIcon className="h-4 w-4" />
             </button>
             <div className="flex-none">
-                <Searchbar message={messageText} setMessage={setMessageText} sendMessage={sendMessage} />
+                <Searchbar message={messageText} setMessage={setMessageText} sendMessage={handleNewMessageText} />
             </div>
         </div>
     );

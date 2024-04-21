@@ -3,14 +3,6 @@ export interface UserData {
     name: string;
 }
 
-export interface Message {
-    id: string;
-    res: {
-        text: string;
-    };
-    user: string;
-}
-
 export interface Tags {
     id: string;
     name: string;
@@ -34,10 +26,4 @@ export interface SavedLink {
 export interface Category {
     id: string;
   name: string;
-}
-
-export interface Chat {
-    id: string;
-    messages: Message[];
-    category: Category;
 }

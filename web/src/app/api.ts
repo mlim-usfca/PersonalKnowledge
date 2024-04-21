@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from 'axios';
-import { Message, UserData, SavedLink, SavedCategory, Tags } from './interfaces';
-import { mockUser, mockMessages, mockLinks, mockTags, mockCategories, mockAIResponse } from './mockData';
+import { UserData, SavedLink, SavedCategory, Tags } from './interfaces';
+import { mockUser, mockLinks, mockTags } from './mockData';
 import { supabase } from '../components/supabase';
 
 const useMockData = process.env.NEXT_PUBLIC_DATA_SOURCE_TYPE === 'mock';
@@ -21,47 +21,6 @@ export const fetchUserData = async (userId: string): Promise<UserData> => {
         return response.data;
     } catch (error) {
         console.error("An error occurred while fetching user data:", error);
-        throw error;
-    }
-};
-
-// export const fetchMessages = async (userId: string): Promise<Message[]> => {
-//     // if (useMockData) {
-//     //     return mockMessages;
-//     // }
-
-//     try {
-//         const response: AxiosResponse<Message[]> = await API.get(`/users/${userId}/messages`);
-//         return response.data;
-//     } catch (error) {
-//         console.error("An error occurred while fetching messages:", error);
-//         throw error;
-//     }
-// };
-
-// export const addMessage = async (userId: string, message: Message): Promise<Message> => {
-//     if (useMockData) {
-//         return message;
-//     }
-    
-//     try {
-//         const response: AxiosResponse<Message> = await API.post(`/users/${userId}/messages`, message);
-//         return response.data;
-//     } catch (error) {
-//         console.error("An error occurred while adding message:", error);
-//         throw error;
-//     }
-// };
-
-export const fetchMessageResponse = async (userId: string, message: Message): Promise<Message> => {
-    if (useMockData) {
-        return mockAIResponse;
-    }
-    try {
-        const response: AxiosResponse<Message> = await API.post(`/users/${userId}/messages`, message);
-        return response.data;
-    } catch (error) {
-        console.error("An error occurred while adding message:", error);
         throw error;
     }
 };

@@ -4,7 +4,7 @@ import React, { useLayoutEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Head from 'next/head';
 import { Tab } from '@headlessui/react';
-import Chat from '@/components/chat';
+import Chat from '@/app/chats/chat';
 import { useAuth } from '@/app/auth/provider';
 import SavedContent from '@/components/savedcontent';
 import UserPage from '@/components/user';

@@ -1,7 +1,7 @@
 import React from "react";
-// import { supabase } from "./supabase";
 import { useAuth } from '@/app/auth/provider';
 import { useRouter } from 'next/navigation';
+import { deleteChats } from "@/app/chats/functions";
 
 const UserPage: React.FC = () => {
     const router = useRouter();
@@ -9,15 +9,18 @@ const UserPage: React.FC = () => {
 
     const handleSignOut = async () => {
         await signOut();
+        if (user) await deleteChats(user);
         router.push('/');
     };
 
     return (
         <div>
-            <div className="w-full justify-between items-center mb-4">
-                <h2 className="text-xl font-medium mb-1">User Page</h2>
-                <div className="text-lg mb-5">{user?.email}</div>
-                <button onClick={handleSignOut}className="bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded">
+            <div className="w-full flex flex-col items-center justify-center mb-4">
+                <div className="h-28 w-28 flex items-center justify-center">
+                    <img src={user?.user_metadata.avatar_url} alt="User Avatar" width={300} height={300} className="rounded-full" />
+                </div>
+                <h2 className="text-xl font-medium my-3">Hi, {user?.user_metadata.full_name}!</h2>
+                <button onClick={handleSignOut} className="bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded">
                     Sign Out
                 </button>
             </div>
