@@ -9,12 +9,6 @@ export interface Tags {
     emoji: string;
 }
 
-export interface SavedCategory {
-    id: number;
-    name: string;
-    links: SavedLink[];
-}
-
 export interface SavedLink {
     id: string;
     title: string;
@@ -26,4 +20,5 @@ export interface SavedLink {
 export interface Category {
     id: string;
   name: string;
+  links: string[];
 }

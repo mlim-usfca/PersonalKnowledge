@@ -15,16 +15,11 @@ import Image from 'next/image';
 import { Listbox, Transition } from '@headlessui/react';
 import { CheckIcon, ChevronUpDownIcon, ArrowPathIcon } from '@heroicons/react/20/solid';
 
-
-const categories: Category[] = [
-    { id: '1', name: 'To visit' },
-    { id: '2', name: 'To eat' }
-]
-
 const ChatComponent: React.FC = () => {
     const dispatch = useAppDispatch();
     const { user } = useAuth();
     const { chat, messagesStatus, messagesError, status, error } = useAppSelector((state) => state.chats);
+    const categories = useAppSelector((state) => state.categories.categories);
     const [messages, setMessages] = useState<Message[]>([]);
     const [category, setCategory] = useState<Category>(categories[0]);
     const [messageText, setMessageText] = useState('');
@@ -44,7 +39,6 @@ const ChatComponent: React.FC = () => {
             alert('Please wait for the previous message to be processed');
         }
     }
-
 
     const addCategoryToChat = async () => {
         if (category && user) {
@@ -179,7 +173,7 @@ const ChatComponent: React.FC = () => {
                             </div>
                             <div className={`${ msg.role === 'system' ? 'bg-purple-200' : 'bg-blue-200' } rounded-lg ml-3 p-2 w-11/12 text-sm`}>
                                 <div className='font-semibold'>
-                                    {msg.role === 'system' ? 'DragonAI' : getUserName()}
+                                    { msg.role === 'system' ? 'DragonAI' : getUserName() }
                                 </div>
                                 <p className="my-1 text-left text-md">{msg.content}</p>
                             </div>
@@ -193,11 +187,15 @@ const ChatComponent: React.FC = () => {
             <div ref={chatEndRef} />
             </>
             </div>
-            <button className="flex justify-end text-gray-400 hover:text-gray-500 my-3" type="button" onClick={(e) => {
+            <button className="flex gap-3 justify-end text-gray-400 hover:text-gray-500 my-3" type="button" onClick={(e) => {
                 e.preventDefault();
                 handleCategorySwitch()
-              }}>
-                <span className='text-sm'>Switch Category</span><ArrowPathIcon className="h-4 w-4" />
+            }}>
+                <div className='flex my-auto'>
+                    <span className='text-sm'>Switch Category</span>
+                    <ArrowPathIcon className="h-4 w-4 my-auto" />
+                </div>
+                <span className='px-2 py-1 rounded-md bg-orange-300 text-yellow-50 text-sm'>{ category.name }</span>
             </button>
             <div className="flex-none">
                 <Searchbar message={messageText} setMessage={setMessageText} sendMessage={handleNewMessageText} />

@@ -2,25 +2,15 @@
 
 import React, { useState } from 'react';
 import { useAuth } from '@/app/auth/provider';
-import { supabase } from './supabase';
+import { addCategoryAsync } from '@/app/archive/categorySlice';
+import { useAppDispatch } from '@/app/hooks';
 
 type NewCategoryModalProps = {
   onClose: () => void;
 };
 
-// type for intent options
-type IntentOption = {
-  id: number;
-  name: string;
-};
-
-const intents = [
-  { id: 1, name: 'To visit' },
-  { id: 2, name: 'To eat' }
-]
-
 const NewCategoryModal: React.FC<NewCategoryModalProps> = (props) => {
-
+  const dispatch = useAppDispatch();
   const [category, setCategory] = useState('');
   const { user } = useAuth();
 
@@ -28,27 +18,10 @@ const NewCategoryModal: React.FC<NewCategoryModalProps> = (props) => {
     props.onClose();
   };
 
-  async function addNewCategory() {
-    try {
-      if (!user) {
-        alert('User must be logged in to submit links.');
-        return;
-      }
-      const { error: insertError } = await supabase
-        .from('categories')
-        .insert([
-            {category_name: category, user_id: user.id}
-        ])
-      
-      if (insertError) {
-          throw new Error('Submission failed');
-      } else {
-          props.onClose();
-      }
-    } catch (error) {
-      alert('Couldn\'t submit, try again');
-      console.error(error);
-    }
+  const addNewCategory = async () => {
+    if (!user) return;
+    await dispatch(addCategoryAsync({ category: category, userId: user?.id }));
+    props.onClose();
   }
 
   return (
