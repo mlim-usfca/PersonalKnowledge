@@ -45,7 +45,7 @@ const LinkPreview: React.FC<LinkPreviewProps> = ({ link }) => {
 
     return (
         <div className='bg-yellow-50 hover:bg-orange-50 p-1 shadow rounded-md w-full drop-shadow shadow-md'>
-            <a href={link} className="fit-content">
+            <a href={link} target="_blank" className="fit-content">
                 <div className="rounded-xl p-1">
                     <h3 className="text-md font-medium text-black break-words text-orange-800">
                         {previewData.title}
