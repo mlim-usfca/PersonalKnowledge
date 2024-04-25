@@ -29,7 +29,6 @@ const generateEmbedding = await pipeline(
 
 Deno.serve(async (req) => {
   // Handle CORS
-  console.log("heloo we are here", req);
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders });
   }
