@@ -3,24 +3,10 @@ export interface UserData {
     name: string;
 }
 
-export interface Message {
-    id: string;
-    res: {
-        text: string;
-    };
-    user: string;
-}
-
 export interface Tags {
     id: string;
     name: string;
     emoji: string;
-}
-
-export interface SavedCategory {
-    id: number;
-    name: string;
-    links: SavedLink[];
 }
 
 export interface SavedLink {
@@ -31,9 +17,8 @@ export interface SavedLink {
     category: string;
 }
 
-export interface AIResponse {
+export interface Category {
     id: string;
-    query: string;
-    response: string;
+  name: string;
+  links: string[];
 }
-

@@ -1,9 +1,9 @@
 import axios, { AxiosResponse } from 'axios';
-import { Message, UserData, SavedLink, SavedCategory, Tags } from './interfaces';
-import { mockUser, mockMessages, mockLinks, mockTags, mockCategories } from './mockData';
+import { UserData, SavedLink, SavedCategory, Tags } from './interfaces';
+import { mockUser, mockLinks, mockTags } from './mockData';
 import { supabase } from '../components/supabase';
 
-const useMockData = true;
+const useMockData = process.env.NEXT_PUBLIC_DATA_SOURCE_TYPE === 'mock';
 
 // default config for axios
 const API = axios.create({
@@ -25,100 +25,6 @@ export const fetchUserData = async (userId: string): Promise<UserData> => {
     }
 };
 
-export const fetchMessages = async (userId: string): Promise<Message[]> => {
-    if (useMockData) {
-        return mockMessages;
-    }
-
-    try {
-        const response: AxiosResponse<Message[]> = await API.get(`/users/${userId}/messages`);
-        return response.data;
-    } catch (error) {
-        console.error("An error occurred while fetching messages:", error);
-        throw error;
-    }
-};
-
-export const addMessage = async (userId: string, message: Message): Promise<Message> => {
-    if (useMockData) {
-        return message;
-    }
-    
-    try {
-        const response: AxiosResponse<Message> = await API.post(`/users/${userId}/messages`, message);
-        return response.data;
-    } catch (error) {
-        console.error("An error occurred while adding message:", error);
-        throw error;
-    }
-};
-
-export const fetchSavedCategories = async (userId: string): Promise<SavedCategory[]> => {
-    // if (useMockData) {
-    //     return mockCategories;
-    // }
-
-    try {
-        let userCategories: SavedCategory[] = [];
-        const { data: { user } } = await supabase.auth.getUser();
-  
-        if (!user) {
-            alert('User must be logged in to submit links.');
-            return userCategories;
-        }
-        const { data:categoryData, error: categoryError } = await supabase
-        .from('categories')
-        .select()
-        .eq('user_id', user.id);
-        if (!categoryData) {
-            alert('User does not have any category!');
-            return userCategories;
-        }
-
-        let links: SavedLink[] = [];
-        const { data:linkData, error:linkerror } = await supabase
-        .from('category_link_relation')
-        .select()
-        .eq('creator', user.id);
-
-        if (!linkData) {
-            alert('User does not have any link!');
-        } else {
-            linkData.forEach( (row) => {
-                let categoryLink = (): SavedLink => ({
-                    id: '',
-                    title: '',
-                    url: row.link,
-                    tags: [],
-                    category: row.category
-                });
-                links.push(categoryLink());
-            });
-        }
-
-        categoryData.forEach( (element) => {
-            let templinks: SavedLink[] = [];
-            
-            links.forEach( (row) => {
-                if (row.category == element.category_name){
-                    templinks.push(row);
-                }
-            });
-
-            let userCategory = (): SavedCategory => ({
-                id: element.id,
-                name: element.category_name,
-                links: templinks,
-            });
-            userCategories.push(userCategory());
-        });
-        return userCategories;
-    } catch (error) {
-        console.error("An error occurred while fetching saved links:", error);
-        throw error;
-    }
-};
-
 export const fetchSavedLinks = async (userId: string): Promise<SavedLink[]> => {
     if (useMockData) {
         return mockLinks;
@@ -133,9 +39,13 @@ export const fetchSavedLinks = async (userId: string): Promise<SavedLink[]> => {
     }
 };
 
-export const addSavedLink = async (userId: string, link: SavedLink): Promise<SavedLink> => {
+export const addSavedLink = async (userId: string, savedLink: SavedLink): Promise<SavedLink> => {
+    if (useMockData) {  
+        return savedLink;
+    }
+
     try {
-        const response: AxiosResponse<SavedLink> = await API.post(`/users/${userId}/saved-links`, link);
+        const response: AxiosResponse<SavedLink> = await API.post(`/users/${userId}/saved-links`, savedLink);
         return response.data;
     } catch (error) {
         console.error("An error occurred while adding saved link:", error);

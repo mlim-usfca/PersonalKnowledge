@@ -15,7 +15,7 @@ const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY');
 export const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers':
-      'authorization, x-client-info, apikey, content-type',
+      'Authorization, X-Client-Info, apikey, Content-Type',
 };
 
 // Configuration for Deno runtime
@@ -39,7 +39,10 @@ Deno.serve(async (req) => {
         }),
         {
           status: 500,
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            ...corsHeaders,
+            'Content-Type': 'application/json' 
+          },
         }
     );
   }
@@ -51,7 +54,10 @@ Deno.serve(async (req) => {
         JSON.stringify({ error: `No authorization header passed` }),
         {
           status: 500,
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 
+            ...corsHeaders,
+            'Content-Type': 'application/json' 
+          },
         }
     );
   }
@@ -76,7 +82,10 @@ Deno.serve(async (req) => {
         }),
         {
           status: 400,
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            ...corsHeaders, 
+            'Content-Type': 'application/json' 
+          },
         }
     );
   }
@@ -105,7 +114,10 @@ Deno.serve(async (req) => {
         }),
         {
           status: 500,
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 
+            ...corsHeaders,
+            'Content-Type': 'application/json' 
+          },
         }
     );
   }
@@ -151,7 +163,12 @@ Deno.serve(async (req) => {
   });
 
   const stream = OpenAIStream(completionStream);
-  const textResponse = new StreamingTextResponse(stream, { headers: corsHeaders });
+  const textResponse = new StreamingTextResponse(stream, { 
+    headers: {
+      ...corsHeaders,
+      'Content-Type': 'text/plain',
+    },
+  });
   console.log("tresponse" , textResponse);
     // const reader = textResponse.body.getReader();
     // if (!reader) {
