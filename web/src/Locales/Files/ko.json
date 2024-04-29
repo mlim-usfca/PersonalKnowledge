@@ -1,0 +1,13 @@
+{
+    "hello": "안녕하세요",
+    "login": "로그인",
+    "signup": "회원 가입",
+    "gsignin": "가입하기",
+    "glogin": "구글 계정으로 로그인하기",
+    "saves": "저장된 링크",
+    "chat": "대화 하기",
+    "category": "카테고리",
+    "ncategory": "새로운 카테고리",
+    "categories": "내가 만든 카테고리",
+    "submit": "등록"
+  }

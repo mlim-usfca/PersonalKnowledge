@@ -3,6 +3,7 @@
 import React from 'react';
 import { useAuth } from '@/app/auth/provider';
 import { useRouter } from 'next/navigation';
+import { useTranslation } from 'react-i18next';
 
 type AuthModalProps = {
   onClose: () => void;
@@ -24,7 +25,7 @@ const AuthModal: React.FC<AuthModalProps> = (props) => {
       props.onAuthenticated(false);
     }
   };
-
+  const { t } = useTranslation();
   return (
     <div className="flex items-center justify-center h-screen w-screen fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto z-10">
       <div className="relative mx-auto mx-4 px-7 py-6 border w-96 shadow-lg rounded-[12px] bg-white">
@@ -46,7 +47,7 @@ const AuthModal: React.FC<AuthModalProps> = (props) => {
           </svg>
         </button>
         <h3 className="text-3xl font-bold leading-6 font-medium text-gray-900 mt-5 mb-3">
-          Sign In
+        {t('gsignin')}
         </h3>
         <form
           className="bg-white rounded pt-6 pb-6"
@@ -60,7 +61,7 @@ const AuthModal: React.FC<AuthModalProps> = (props) => {
             type="button"
             onClick={handleSignIn}
           >
-            Sign In with Google
+            {t('glogin')}
           </button>
         </form>
       </div>
