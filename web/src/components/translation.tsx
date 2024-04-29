@@ -1,13 +1,11 @@
 import React from 'react';
-import { useTranslation } from 'react-i18next';
 import i18n from '../Locales/i18n'
 
 const MyLanguage = () => {
-  const { t } = useTranslation();
-
   const handleLanguageChange = (lang) => {
     if (i18n && i18n.changeLanguage) {
       i18n.changeLanguage(lang);
+      localStorage.setItem('dai-lng', lang);
     } else {
       console.error('i18n or changeLanguage not available');
     }

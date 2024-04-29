@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { useAuth } from '@/app/auth/provider';
 import { addCategoryAsync } from '@/app/archive/categorySlice';
 import { useAppDispatch } from '@/app/hooks';
+import { useTranslator } from '@/app/contexts/translationProvider';
 
 type NewCategoryModalProps = {
   onClose: () => void;
@@ -13,6 +14,7 @@ const NewCategoryModal: React.FC<NewCategoryModalProps> = (props) => {
   const dispatch = useAppDispatch();
   const [category, setCategory] = useState('');
   const { user } = useAuth();
+  const { t } = useTranslator();
 
   const handleSubmit = () => {
     props.onClose();
@@ -54,7 +56,7 @@ const NewCategoryModal: React.FC<NewCategoryModalProps> = (props) => {
           }}
         >
           <label className="block text-gray-700 text-sm font-bold mb-2">
-            Category
+            {t('category')}
           </label>
           <input
             className="block w-full px-4 py-2 mt-2 text-gray-700 placeholder-gray-400 focus:outline-

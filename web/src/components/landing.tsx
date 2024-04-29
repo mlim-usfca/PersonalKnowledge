@@ -1,13 +1,13 @@
 import { useState } from 'react'
 import AuthModal from '@/components/auth';
 import Image from 'next/image';
-import { useTranslation } from 'react-i18next';
 import MyLanguage from './translation';
-
+import { useTranslator } from '@/app/contexts/translationProvider';
 
 const Landing: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [authMode, setAuthMode] = useState<"signup" | "login">("signup"); 
+  const { t } = useTranslator();
 
   const handleSignUp = () => {
     setAuthMode("signup");
@@ -17,8 +17,7 @@ const Landing: React.FC = () => {
     setAuthMode("login");
     setIsModalOpen(true);
   }
-  const { t } = useTranslation();
-
+  
     return (
       <div className="flex flex-col mx-auto pt-20 md:pt-40 px-8 sm:px-10 h-full">
         <div className="flex-none mb-4 w-full justify-center">

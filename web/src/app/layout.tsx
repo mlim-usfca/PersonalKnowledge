@@ -2,6 +2,7 @@
 
 import ReduxProvider from "@/store/redux-provider";
 import { AuthProvider } from '@/app/auth/provider';
+import { TranslationProvider } from "@/app/contexts/translationProvider";
 import { Inter } from "next/font/google";
 import "./globals.css";
 
@@ -17,7 +18,9 @@ export default function RootLayout({
       <body className={inter.className}>
         <ReduxProvider>
           <AuthProvider>
-            {children}
+            <TranslationProvider>
+              {children}
+            </TranslationProvider>
           </AuthProvider>
         </ReduxProvider>
       </body>
