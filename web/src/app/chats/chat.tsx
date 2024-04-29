@@ -22,6 +22,7 @@ const ChatComponent: React.FC = () => {
     const categories = useAppSelector((state) => state.categories.categories);
     const [messages, setMessages] = useState<Message[]>([]);
     const [category, setCategory] = useState<Category>(categories[0]);
+    const [categoryName, setCategoryName] = useState('');
     const [messageText, setMessageText] = useState('');
     const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(true);
     const chatEndRef = useRef<HTMLDivElement>(null);
@@ -69,6 +70,9 @@ const ChatComponent: React.FC = () => {
 
     useEffect(() => {
         setIsCategoryModalOpen(true);
+        if (category) {
+            setCategoryName(category.name)
+        }
     }, []);
 
     useEffect(() => {
@@ -195,7 +199,7 @@ const ChatComponent: React.FC = () => {
                     <span className='text-sm'>Switch Category</span>
                     <ArrowPathIcon className="h-4 w-4 my-auto" />
                 </div>
-                <span className='px-2 py-1 rounded-md bg-orange-300 text-yellow-50 text-sm'>{ category.name }</span>
+                <span className='px-2 py-1 rounded-md bg-orange-300 text-yellow-50 text-sm'>{ categoryName }</span>
             </button>
             <div className="flex-none">
                 <Searchbar message={messageText} setMessage={setMessageText} sendMessage={handleNewMessageText} />
