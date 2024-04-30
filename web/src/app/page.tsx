@@ -17,7 +17,7 @@ export default function Home() {
     if (isAuthenticated) {
       router.push('/dashboard');
     }
-  }, []);
+  }, [isAuthenticated, router]);
 
   return (
     <main className="h-screen bg-gray-50 r-0">

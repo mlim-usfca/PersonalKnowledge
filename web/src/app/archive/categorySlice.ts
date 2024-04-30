@@ -1,7 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { addNewCategory, addNewLink, fetchCategories } from'@/app/archive/functions';
 import { Category } from '@/app/interfaces';
-import { mockCategories } from '@/app/mockData';
 import { User } from '@supabase/supabase-js';
 
 interface CategoryState {
@@ -10,24 +9,11 @@ interface CategoryState {
   error: string | null;
 }
 
-const getInitialState = () => {
-  const initialState: CategoryState = {
+const initialState: CategoryState = {
     categories: [],
     status: 'idle',
     error: null,
-  };
-  if (process.env.NEXT_PUBLIC_DATA_SOURCE_TYPE === 'mock') {
-    return {
-      ...initialState,
-      categories: mockCategories,
-      status: 'succeeded',
-    };
-  }
-  console.log('getInitialState', initialState);
-  return initialState;
 };
-
-const initialState = getInitialState();
 
 export const fetchCategoriesAsync = createAsyncThunk(
   'categories/fetchCategories',

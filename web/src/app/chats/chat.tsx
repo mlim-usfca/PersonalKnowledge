@@ -22,7 +22,6 @@ const ChatComponent: React.FC = () => {
     const categories = useAppSelector((state) => state.categories.categories);
     const [messages, setMessages] = useState<Message[]>([]);
     const [category, setCategory] = useState<Category>(categories[0]);
-    const [categoryName, setCategoryName] = useState('');
     const [messageText, setMessageText] = useState('');
     const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(true);
     const chatEndRef = useRef<HTMLDivElement>(null);
@@ -70,21 +69,18 @@ const ChatComponent: React.FC = () => {
 
     useEffect(() => {
         setIsCategoryModalOpen(true);
-        if (category) {
-            setCategoryName(category.name)
-        }
     }, []);
 
     useEffect(() => {
         setMessages(chat.messages);
         chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }, [[chat.messages.length]]);
+    }, [chat.messages, [chat.messages.length]]);
 
     useEffect(() => {
         if (user) {
             dispatch(fetchOrCreateChat({ category, user }));
         }
-    }, [category, user]);
+    }, [category, user, dispatch]);
 
     return (
         <div className="flex flex-col h-full">
@@ -172,7 +168,7 @@ const ChatComponent: React.FC = () => {
                             { getUserName() === 'Anonymous' || msg.role === 'system' ?
                                 <Image className="rounded-full" src="/images/user.png" alt="user" width={35} height={35} />
                                 :
-                                <img src={user?.user_metadata.avatar_url} alt="User Avatar" width={80} height={80} className="rounded-full" />
+                                <Image src={user?.user_metadata.avatar_url} alt="User Avatar" width={80} height={80} className="rounded-full" />
                             }
                             </div>
                             <div className={`${ msg.role === 'system' ? 'bg-purple-200' : 'bg-blue-200' } rounded-lg ml-3 p-2 w-11/12 text-sm`}>
@@ -199,7 +195,7 @@ const ChatComponent: React.FC = () => {
                     <span className='text-sm'>Switch Category</span>
                     <ArrowPathIcon className="h-4 w-4 my-auto" />
                 </div>
-                <span className='px-2 py-1 rounded-md bg-orange-300 text-yellow-50 text-sm'>{ categoryName }</span>
+                <span className='px-2 py-1 rounded-md bg-orange-300 text-yellow-50 text-sm'>{ category.name }</span>
             </button>
             <div className="flex-none">
                 <Searchbar message={messageText} setMessage={setMessageText} sendMessage={handleNewMessageText} />

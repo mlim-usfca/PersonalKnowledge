@@ -1,12 +1,12 @@
 'use client';
 
-import { useEffect, useContext } from 'react';
-import { AuthContext } from '@/app/auth/provider';
+import { useEffect } from 'react';
+import { useAuth } from '@/app/auth/provider';
 import { useRouter } from 'next/navigation';
 
 const AuthCallback = () => {
   const router = useRouter();
-  const { isAuthenticated } = useContext(AuthContext) as any;
+  const { isAuthenticated } = useAuth();
 
   useEffect(() => {
     const handleCallback = async () => {
@@ -35,7 +35,7 @@ const AuthCallback = () => {
     };
 
     handleCallback();
-  }, [router]);
+  }, [router, isAuthenticated]);
 
   return <div>Redirecting...</div>;
 };
