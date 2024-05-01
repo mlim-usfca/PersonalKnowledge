@@ -32,7 +32,7 @@ const SavedContent: React.FC = () => {
             }
         };
         loadData();
-    }, []);
+    }, [user, router, dispatch]);
 
     const handleClick = (name: string) => {
         setSelectedCategory(name);
