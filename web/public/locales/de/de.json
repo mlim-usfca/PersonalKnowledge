@@ -1,0 +1,23 @@
+{
+    "hello": "Hallo Welt!",
+    "login": "Anmelden",
+    "signup": "Registrieren",
+    "gsignin": "Mit Google anmelden",
+    "glogin": "Mit Google einloggen",
+    "signout": "Abmelden",
+    "saves": "Speichern",
+    "chat": "Chat",
+    "category": "Kategorie",
+    "ncategory": "Neue Kategorie",
+    "categories": "Kategorien",
+    "ncategories": "Neue Kategorie speichern",
+    "ycategory": "Deine Kategorie",
+    "nlink": "Neuen Link hinzufügen +",
+    "nolink": "In dieser Kategorie sind noch keine Links gespeichert... Füge jetzt einen hinzu!",
+    "selcategory": "Wähle eine Kategorie",
+    "startchat": "Chat starten",
+    "chcategory": "Kategorie wechseln",
+    "elaborate":"Ausführlich mit...",
+    "search" : "Suche etwas...",
+    "submit": "Einreichen"
+}

@@ -21,7 +21,7 @@ const Landing: React.FC = () => {
       <div className="flex flex-col mx-auto pt-20 md:pt-40 px-8 sm:px-10 h-full">
         <div className="flex-none mb-4 w-full justify-center">
           {/* <Image src="/DragonAI.png" alt="DragonAI Logo" width={300} height={300} className="mt-8 mb-4"/> */}
-          <img src="/DragonAI.png" alt="User Avatar" width={300} height={300} className="mt-8 mb-4" />
+          <img src="/DragonAI.png" alt="DragonAI Logo" width="200" height="200" />
         </div>
         <div className="flex justify-center my-10 text-lg">
           <button onClick={() => handleSignUp()} className='text-indigo-600 hover:text-indigo-400'>

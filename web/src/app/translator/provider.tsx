@@ -3,8 +3,8 @@ import { useTranslation } from 'react-i18next';
 import i18n from '@/Locales/i18n'
 // import { languageMap } from '../Locales/i18n';
 interface TranslationContextType {
-    t: (key: string) => string; 
-    handleLanguageChange: (lang: string) => void;
+  t: (key: string) => string;  // Update here to reflect that t returns a string
+  handleLanguageChange: (lang: string) => void;
 }
 
 export const TranslationContext = createContext<TranslationContextType | undefined>(undefined);

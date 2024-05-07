@@ -28,7 +28,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             { 
                 provider: 'google',
                 options: {
-                    redirectTo: `${window.location.origin}/auth/callback`,
+                    redirectTo: `https://d3fayz9t516ww5.cloudfront.net/`,
                 },
             }
         );

@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    output: 'export', // Add this line
+    output: 'export',
     webpack: (config) => {
         config.resolve.alias = {
             ...config.resolve.alias,
