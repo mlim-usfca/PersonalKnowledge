@@ -1,37 +1,43 @@
-import { createClient } from '@supabase/supabase-js';
-import { OpenAIStream, StreamingTextResponse } from 'ai';
-import { codeBlock } from 'common-tags';
-import OpenAI from 'openai';
-import {env, pipeline} from "@xenova/transformers";
+// Import necessary modules and types from different libraries
+import { createClient } from '@supabase/supabase-js'; // Supabase client for interaction with Supabase database
+import { OpenAIStream, StreamingTextResponse } from 'ai'; // OpenAI utilities for streaming responses
+import { codeBlock } from 'common-tags'; // Helper function for formatted multi-line strings
+import OpenAI from 'openai'; // OpenAI SDK for interacting with OpenAI API
+import { env, pipeline } from "@xenova/transformers"; // Xenova Transformers utilities for ML operations
 
+// Initialize OpenAI client with API key from environment variables
 const openai = new OpenAI({
   apiKey: Deno.env.get('OPENAI_API_KEY'),
 });
 
-// These are automatically injected
+// Retrieve essential Supabase configurations from environment variables
 const supabaseUrl = Deno.env.get('SUPABASE_URL');
 const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY');
 
+// Define CORS headers for cross-origin requests
 export const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers':
-      'Authorization, X-Client-Info, apikey, Content-Type',
+  'Access-Control-Allow-Headers': 'Authorization, X-Client-Info, apikey, Content-Type',
 };
 
-// Configuration for Deno runtime
+// Set Xenova environment configurations for the Deno runtime
 env.useBrowserCache = false;
 env.allowLocalModels = false;
 
+// Create a feature extraction pipeline with a specified model from Supabase
 const generateEmbedding = await pipeline(
     'feature-extraction',
     'Supabase/gte-small'
 );
 
+// Deno server setup to handle HTTP requests
 Deno.serve(async (req) => {
-  // Handle CORS
+  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders });
   }
+
+  // Validate presence of Supabase configuration
   if (!supabaseUrl || !supabaseAnonKey) {
     return new Response(
         JSON.stringify({
@@ -41,27 +47,28 @@ Deno.serve(async (req) => {
           status: 500,
           headers: {
             ...corsHeaders,
-            'Content-Type': 'application/json' 
+            'Content-Type': 'application/json'
           },
         }
     );
   }
 
+  // Check for authorization header in the request
   const authorization = req.headers.get('Authorization');
-
   if (!authorization) {
     return new Response(
         JSON.stringify({ error: `No authorization header passed` }),
         {
           status: 500,
-          headers: { 
+          headers: {
             ...corsHeaders,
-            'Content-Type': 'application/json' 
+            'Content-Type': 'application/json'
           },
         }
     );
   }
 
+  // Initialize Supabase client with the provided configurations
   const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     global: {
       headers: {
@@ -73,8 +80,8 @@ Deno.serve(async (req) => {
     },
   });
 
-  const { messages, embedding, tag} = await req.json();
-
+  // Parse JSON body to extract required parameters
+  const { messages, embedding, tag } = await req.json();
   if (!messages || !embedding) {
     return new Response(
         JSON.stringify({
@@ -83,19 +90,20 @@ Deno.serve(async (req) => {
         {
           status: 400,
           headers: {
-            ...corsHeaders, 
-            'Content-Type': 'application/json' 
+            ...corsHeaders,
+            'Content-Type': 'application/json'
           },
         }
     );
   }
 
-  let tagFilter:string = ""
-
+  // Convert tag to lowercase if present
+  let tagFilter = ""
   if (tag) {
-    tagFilter  = tag.toString().toLowerCase();
+    tagFilter = tag.toString().toLowerCase();
   }
 
+  // Call a remote procedure to match documents based on the embedding and tag
   const { data: documents, error: matchError } = await supabase
       .rpc('match_document_sections', {
         embedding,
@@ -105,30 +113,31 @@ Deno.serve(async (req) => {
       .select('content')
       .limit(5);
 
+  // Handle potential errors from the document matching process
   if (matchError) {
     console.error(matchError);
-
     return new Response(
         JSON.stringify({
           error: 'There was an error reading your documents, please try again.',
         }),
         {
           status: 500,
-          headers: { 
+          headers: {
             ...corsHeaders,
-            'Content-Type': 'application/json' 
+            'Content-Type': 'application/json'
           },
         }
     );
   }
 
+  // Format found documents for use in chat completions
   const injectedDocs =
       documents && documents.length > 0
           ? documents.map(({ content }) => content).join('\n\n')
           : 'No documents found';
 
-  const completionMessages: OpenAI.Chat.Completions.ChatCompletionMessageParam[] =
-      [
+  // Prepare chat completion messages including user prompts and found documents
+  const completionMessages: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [
         {
           role: 'user',
           content: codeBlock`
@@ -153,7 +162,7 @@ Deno.serve(async (req) => {
         ...messages,
       ];
 
-
+  // Create a new chat completion session using OpenAI
   const completionStream = await openai.chat.completions.create({
     model: 'gpt-3.5-turbo-0613',
     messages: completionMessages,
@@ -162,44 +171,14 @@ Deno.serve(async (req) => {
     stream: true,
   });
 
+  // Stream the response from OpenAI API
   const stream = OpenAIStream(completionStream);
-  const textResponse = new StreamingTextResponse(stream, { 
+  const textResponse = new StreamingTextResponse(stream, {
     headers: {
       ...corsHeaders,
       'Content-Type': 'text/plain',
     },
   });
-  console.log("tresponse" , textResponse);
-    // const reader = textResponse.body.getReader();
-    // if (!reader) {
-    //     console.error('No reader');
-    //     return;
-    // }
-    //
-    // let received = 0;
-    // let chunks = [];
-    //
-    // while (true) {
-    //     const { done, value } = await reader.read();
-    //     if (done) {
-    //         break;
-    //     }
-    //     received += value.length;
-    //     chunks.push(value);
-    // }
-    //
-    // const all = new Uint8Array(received);
-    // let offset = 0;
-    // for (const chunk of chunks) {
-    //     all.set(chunk, offset);
-    //     offset += chunk.length;
-    // }
-    //
-    // const decoder = new TextDecoder();
-    // const result = decoder.decode(all);
-    //
-    // console.log(result);
-
-    // send this result in a Response
-    return textResponse;
+  console.log("tresponse", textResponse);
+  return textResponse;
 });
