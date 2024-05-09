@@ -4,6 +4,7 @@ import { OpenAIStream, StreamingTextResponse } from 'ai'; // OpenAI utilities fo
 import { codeBlock } from 'common-tags'; // Helper function for formatted multi-line strings
 import OpenAI from 'openai'; // OpenAI SDK for interacting with OpenAI API
 import { env, pipeline } from "@xenova/transformers"; // Xenova Transformers utilities for ML operations
+import { serve } from "https://deno.land/std@0.192.0/http/server.ts"
 
 // Initialize OpenAI client with API key from environment variables
 const openai = new OpenAI({
@@ -31,7 +32,7 @@ const generateEmbedding = await pipeline(
 );
 
 // Deno server setup to handle HTTP requests
-Deno.serve(async (req) => {
+serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders });
