@@ -26,9 +26,10 @@ To run DragonAI effectively, ensure you have the following prerequisites:
 ![image](https://github.com/mlim-usfca/PersonalKnowledge/assets/66104189/d780bccc-82fe-465e-8164-341e65aaeb71)
 As you can see from picture, developers should set their environments with `Supabase CLI` or `Supabase Self-hosting` and `Next.js`.
 ### Supabase
+- CLI: Please refer [readme.md](https://github.com/mlim-usfca/PersonalKnowledge/blob/main/server/README.md) file under `server` folder.
 - Self-hosting: Please refer [this Wiki guide](https://github.com/mlim-usfca/PersonalKnowledge/wiki/%F0%9F%91%89-Project-Guide-for-developers-(branch:-dev))
-- CLI: Please refer [this Pull Request](https://github.com/mlim-usfca/PersonalKnowledge/pull/14)
+
 ### Next.js
-- Please refer [readme.md](https://github.com/mlim-usfca/PersonalKnowledge/tree/main/web) file under `web` folder.
+- Please refer [readme.md](https://github.com/mlim-usfca/PersonalKnowledge/blob/main/README.md) file under `web` folder.
 
 
