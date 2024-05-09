@@ -1,4 +1,4 @@
-name: Deploy Next.js Site
+name: Deploy Next.js Site with Zero Downtime
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  build:
+  build_and_deploy:
     runs-on: ubuntu-latest
 
     steps:
@@ -23,6 +23,10 @@ jobs:
     - name: Build
       run: npm run build
 
+    - name: Generate Deployment Timestamp
+      id: timestamp
+      run: echo "::set-output name=timestamp::$(date +'%Y%m%d%H%M%S')"
+
     - name: Deploy to S3
       uses: jakejarvis/s3-sync-action@master
       with:
@@ -33,3 +37,29 @@ jobs:
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         AWS_REGION: 'us-east-1'
         SOURCE_DIR: 'out'
+        DEST_DIR: ${{ steps.timestamp.outputs.timestamp }}
+
+    - name: Update CloudFront Origin Path
+      run: |
+        aws cloudfront update-distribution --id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} --distribution-config '{
+          "Origins": {
+            "Items": [
+              {
+                "Id": "myS3Origin",
+                "DomainName": "${{ secrets.S3_BUCKET_NAME }}.s3.amazonaws.com",
+                "OriginPath": "/${{ steps.timestamp.outputs.timestamp }}"
+              }
+            ]
+          },
+          "DefaultCacheBehavior": {
+            "TargetOriginId": "myS3Origin"
+          },
+          "CallerReference": "${{ steps.timestamp.outputs.timestamp }}",
+          "Comment": "Deployment ${$ steps.timestamp.outputs.timestamp }}",
+          "Enabled": true
+        }'
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_DEFAULT_REGION: 'us-east-1'
+
