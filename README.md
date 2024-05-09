@@ -30,6 +30,6 @@ As you can see from picture, developers should set their environments with `Supa
 - Self-hosting: Please refer [this Wiki guide](https://github.com/mlim-usfca/PersonalKnowledge/wiki/%F0%9F%91%89-Project-Guide-for-developers-(branch:-dev))
 
 ### Next.js
-- Please refer [readme.md](https://github.com/mlim-usfca/PersonalKnowledge/blob/main/README.md) file under `web` folder.
+- Please refer [readme.md](https://github.com/mlim-usfca/PersonalKnowledge/blob/main/web/README.md) file under `web` folder.
 
 
