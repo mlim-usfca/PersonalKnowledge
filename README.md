@@ -2,6 +2,13 @@
 ## Introduction
 DragonAI is an innovative platform designed to transform the way users interact with internet content. Our goal is to facilitate efficient content organization, summarization, and personalization to enhance learning and information retention. DragonAI is perfect for researchers, students, and lifelong learners who seek to optimize their informational intake and management.
 
+## Live Demo
+### You can access [the website here.](https://www.dragonai.live/)
+<img width="1335" alt="Screenshot 2024-05-09 at 11 46 29 AM" src="https://github.com/mlim-usfca/PersonalKnowledge/assets/66104189/9ede04e1-73b3-4ba4-8554-d2a6c2e894fa">
+<img width="1347" alt="Screenshot 2024-05-09 at 10 40 40 AM" src="https://github.com/mlim-usfca/PersonalKnowledge/assets/66104189/07c52b6b-b823-4ff3-b5e3-513d6bb30294">
+
+
+
 ## Key Features
 ![image](https://github.com/mlim-usfca/PersonalKnowledge/assets/66104189/8e38a4e7-6a2a-4ebc-86ed-c3b2e4523f53)
 - **Content Organization:** Easily categorize and store information in a user-friendly dashboard.
