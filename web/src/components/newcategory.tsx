@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { useAuth } from '@/app/auth/provider';
 import { addCategoryAsync } from '@/app/archive/categorySlice';
 import { useAppDispatch } from '@/app/hooks';
-import { useTranslator } from '@/app/contexts/translationProvider';
+import { useTranslator } from '@/app/translator/provider';
 
 type NewCategoryModalProps = {
   onClose: () => void;

@@ -1,0 +1,14 @@
+{
+    "hello": "Hallo Welt!",
+    "login": "Anmelden",
+    "signup": "Registrieren",
+    "gsignin": "Mit Google anmelden",
+    "glogin": "Mit Google einloggen",
+    "signout": "Abmelden",
+    "saves": "Speichern",
+    "chat": "Chat",
+    "category": "Kategorie",
+    "ncategory": "Neue Kategorie",
+    "categories": "Kategorien",
+    "submit": "Einreichen"
+}

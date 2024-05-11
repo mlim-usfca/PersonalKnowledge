@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useAppSelector, useAppDispatch } from '@/app/hooks';
 import { useAuth } from '@/app/auth/provider';
 import { useRouter } from 'next/navigation';
+import { useTranslator } from '@/app/translator/provider';
 import NewLinkModal from "./newlink";
 import NewCategoryModal from "./newcategory";
 import { Category } from '@/app/interfaces';
@@ -14,6 +15,7 @@ const SavedContent: React.FC = () => {
     const dispatch = useAppDispatch();
     const { user } = useAuth();
     const router = useRouter();
+    const { t } = useTranslator();
     const categories = useAppSelector((state) => state.categories.categories);
     const [isNewLinkModalOpen, setIsNewLinkModalOpen] = useState(false);
     const [isNewCategoryModalOpen, setIsNewCategoryModalOpen] = useState(false);
@@ -47,7 +49,7 @@ const SavedContent: React.FC = () => {
     return (
         <div>
             <div className="w-full flex justify-between items-center mb-4">
-                <h2 className="text-xl font-medium">Categories</h2>
+                <h2 className="text-xl font-medium">{t('categories')}</h2>
                 <button
                     className="px-3 py-2 text-xs text-white bg-indigo-600 rounded-full hover:bg-indigo-700"
                     onClick={() => setIsNewCategoryModalOpen(true)}

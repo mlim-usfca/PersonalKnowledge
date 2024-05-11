@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { useAuth } from '@/app/auth/provider';
-import { useTranslator } from '@/app/contexts/translationProvider';
+import { useTranslator } from '@/app/translator/provider';
 import { useRouter } from 'next/navigation';
 
 type AuthModalProps = {

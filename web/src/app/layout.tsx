@@ -2,7 +2,7 @@
 
 import ReduxProvider from "@/store/redux-provider";
 import { AuthProvider } from '@/app/auth/provider';
-import { TranslationProvider } from "@/app/contexts/translationProvider";
+import { TranslationProvider } from "@/app/translator/provider";
 import { Inter } from "next/font/google";
 import "./globals.css";
 

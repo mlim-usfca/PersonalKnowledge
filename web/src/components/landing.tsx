@@ -1,8 +1,7 @@
 import { useState } from 'react'
 import AuthModal from '@/components/auth';
 import Image from 'next/image';
-import MyLanguage from './translation';
-import { useTranslator } from '@/app/contexts/translationProvider';
+import { useTranslator } from '@/app/translator/provider';
 
 const Landing: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -23,7 +22,6 @@ const Landing: React.FC = () => {
         <div className="flex-none mb-4 w-full justify-center">
           <Image src="/DragonAI.png" alt="DragonAI Logo" width={300} height={300} className="mt-8 mb-4"/>
         </div>
-        <MyLanguage/>
         <div className="flex justify-center my-10 text-lg">
           <button onClick={() => handleSignUp()} className='text-indigo-600 hover:text-indigo-400'>
             {t('signup')}
