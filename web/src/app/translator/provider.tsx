@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import i18n from '@/Locales/i18n'
 // import { languageMap } from '../Locales/i18n';
 interface TranslationContextType {
-    t: () => void;
+    t: (key: string) => string; 
     handleLanguageChange: (lang: string) => void;
 }
 
