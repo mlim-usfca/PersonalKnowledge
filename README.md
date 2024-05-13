@@ -36,7 +36,7 @@ As you can see from picture, developers should set their environments with `Supa
 | Name         | Roles/Responsibilities                                          |
 |--------------|-----------------------------------------------------------------|
 | Inhwa Son    | Project Manager                                                 |
-| Guo Fan      | Extracting content, scraping and cleaning data                  |
+| Guo Fan      | Extracting content, Intergration                                |
 | Tanya Jain   | Frontend, Web, UI in general                                    |
 | Huimin Liu   | Authentication, Category creation                               |
 | Hazal Senturk| Generate Embeddings, RAG chatbot implementation                 |
