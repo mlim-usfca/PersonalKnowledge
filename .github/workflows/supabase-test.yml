@@ -7,10 +7,14 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    name: 'functions-tests'
+    defaults: 
+      run:
+        working-directory: ./server/supabase
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: supabase/setup-cli@v1
         with:
-          version: 1.11.4
+          version: 1.165.0
       - run: supabase db start
       - run: supabase test db
