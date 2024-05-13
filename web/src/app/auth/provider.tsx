@@ -48,6 +48,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             setLoading(true);
             localStorage.removeItem('sb-access-token');
             localStorage.removeItem('sb-refresh-token');
+            localStorage.removeItem('dai-lng');
         }
     };
 

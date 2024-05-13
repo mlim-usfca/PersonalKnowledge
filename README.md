@@ -4,8 +4,7 @@ DragonAI is an innovative platform designed to transform the way users interact 
 
 ## Live Demo
 ### You can access [the website here.](https://www.dragonai.live/)
-<img width="1335" alt="Screenshot 2024-05-09 at 11 46 29 AM" src="https://github.com/mlim-usfca/PersonalKnowledge/assets/66104189/9ede04e1-73b3-4ba4-8554-d2a6c2e894fa">
-<img width="1347" alt="Screenshot 2024-05-09 at 10 40 40 AM" src="https://github.com/mlim-usfca/PersonalKnowledge/assets/66104189/07c52b6b-b823-4ff3-b5e3-513d6bb30294">
+<img width="1467" alt="Screenshot 2024-05-12 at 11 32 05 PM" src="https://github.com/mlim-usfca/PersonalKnowledge/assets/66104189/afaf4018-f973-46e5-b709-8b398e0a9d61">
 
 ## Key Features
 You can check the navigation of key features [here](https://github.com/mlim-usfca/PersonalKnowledge/wiki/%F0%9F%8E%A5-Guide-to-Navigating-the-DragonAI-Website).

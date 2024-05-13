@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import ArrowRight from '../components/icons/IconArrowRight';
 import { Tags } from '@/app/interfaces';
 import { fetchTags } from '@/app/api';
+import { useTranslator } from '@/app/translator/provider';
 
 type SearchbarProps = {
     message: string;
@@ -11,7 +12,7 @@ type SearchbarProps = {
 
 const Searchbar: React.FC<SearchbarProps> = ({message, setMessage, sendMessage}) => {
     const [tags, setTags] = useState<Tags[]>([]);
-
+    const { t } = useTranslator();
     useEffect(() => {
         const loadData = async () => {
           try {
@@ -34,7 +35,7 @@ const Searchbar: React.FC<SearchbarProps> = ({message, setMessage, sendMessage})
     return (
         <div>
           <div className="text-gray-500 font-medium text-left text-xs my-2">
-            Elaborate with...
+          {t('elaborate')}
           </div>
           <div className="flex justify-left items-center flex-wrap gap-1.5">
             {tags.map((tag) => (
@@ -50,7 +51,7 @@ const Searchbar: React.FC<SearchbarProps> = ({message, setMessage, sendMessage})
           <form onSubmit={handleSubmit} className="flex relative mt-2">
             <input
               type="text"
-              placeholder="Search something..."
+              placeholder={t('search')}
               className="mt-1 px-3 py-1.5 md:py-2 block w-full rounded-md border border-gray-300 shadow-sm focus:border-indigo-100 focus:ring focus:ring-indigo-100 focus:ring-opacity-50"
               onChange={(e) => setMessage(e.target.value)}
               value={message}
