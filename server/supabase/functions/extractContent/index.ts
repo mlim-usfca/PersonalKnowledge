@@ -1,18 +1,25 @@
 import { DOMParser } from "https://deno.land/x/deno_dom/deno-dom-wasm.ts";
 import puppeteer from "https://deno.land/x/puppeteer@16.2.0/mod.ts";
-
 import { createClient } from "@supabase/supabase-js";
 import { Database } from '../_lib/database.ts';
 
 const supabaseUrl = Deno.env.get("SUPABASE_URL");
 const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY");
 
+/** 
+ * CORS headers configuration object.
+ */
 export const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Origin': '*',//change "*" based on the web domain
   'Access-Control-Allow-Headers':
     'authorization, x-client-info, apikey, content-type',
 };
 
+/**
+ * Extracts text content from web pages by parsing HTML and selecting specific elements.
+ * @param {string} url - The URL of the webpage to extract content from.
+ * @returns {Promise<string>} A promise that resolves to the extracted text content.
+ */
 async function extractWebContent(url: string) : Promise<string>{
   const response = await fetch(url);
   const html = await response.text();
@@ -32,7 +39,11 @@ async function extractWebContent(url: string) : Promise<string>{
   return extractedText.trim();
 }
 
-// Extracts YouTube transcript using Puppeteer to handle dynamic content
+/**
+ * Extracts YouTube transcript using Puppeteer by navigating to the page and evaluating the DOM.
+ * @param {string} url - The URL of the YouTube video transcript to extract.
+ * @returns {Promise<string>} A promise that resolves to the extracted text of the YouTube transcript.
+ */
 async function extractYoutubeTranscript(url: string) : Promise<string> {
   try {
     // Visit browserless.io to get your free API token
@@ -62,33 +73,39 @@ async function extractYoutubeTranscript(url: string) : Promise<string> {
     console.error(e);
     return "";
   }
-
 }
 
+/**
+ * Handles HTTP requests, determining the correct response based on the request type and body content.
+ * @param {Request} req - The incoming HTTP request.
+ * @returns {Promise<Response>} A promise that resolves to the HTTP response to be sent back.
+ */
 async function handleRequest(req: Request): Promise<Response> {
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders })
   }
 
   if (req.method !== "POST") {
-    return new Response("Only POST method is allowed", { status: 405 });
+    return new Response("Only POST method is allowed", { 
+        status: 405,
+        headers: { ...corsHeaders, 'Content-Type': 'text/plain' }
+    });
   }
 
   try {
     const requestBody = await req.json();
-    
     const authorization = req.headers.get('Authorization');
 
     if (!authorization) {
       return new Response(
-        JSON.stringify({ error: `No authorization header passed` }),
-        {
-          status: 500,
-          headers: { 'Content-Type': 'application/json' },
-        }
+          JSON.stringify({ error: `No authorization header passed` }),
+          {
+              status: 500,
+              headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          }
       );
     }
-    
+
     if (requestBody.url) {
       const url = requestBody.url;
       const youtubePrefix = 'https://www.youtube.com/watch?v=';
@@ -99,26 +116,20 @@ async function handleRequest(req: Request): Promise<Response> {
         
         console.log('Transcript extracted successfully:', content);
         
-        // Return the extracted transcript
         return new Response(JSON.stringify({ content }), {
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         });
-
-       
-        
       } else {// parse web content
         const content = await extractWebContent(url);
 
         console.log('Web content extracted successfully:', content);
 
-        // Return the extracted transcript
         return new Response(JSON.stringify({ content }), {
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         });
       }
 
     } else if (requestBody.name) {
-      // Original greeting functionality
       const data = {
         message: `Hello ${requestBody.name}!`,
       };
@@ -127,7 +138,10 @@ async function handleRequest(req: Request): Promise<Response> {
       });
     } else {
       // Handle invalid request body
-      return new Response("Invalid request body", { status: 400 });
+      return new Response("Invalid request body", { 
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
   } catch (error) {
     return new Response(JSON.stringify({ error: error.message }), {
@@ -140,14 +154,3 @@ async function handleRequest(req: Request): Promise<Response> {
 // Start serving requests
 Deno.serve(handleRequest);
 
-/* To invoke locally:
-
-  1. Run `supabase start` (see: https://supabase.com/docs/reference/cli/supabase-start)
-  2. Make an HTTP request:
-
-  curl -i --location --request POST 'http://127.0.0.1:54321/functions/v1/extractContent' \
-    --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0' \
-    --header 'Content-Type: application/json' \
-    --data '{"name":"extractContent","url": "https://example.com"}'
-
-*/
