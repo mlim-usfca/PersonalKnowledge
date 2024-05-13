@@ -14,6 +14,7 @@ import Loader from '@/components/loader';
 import Image from 'next/image';
 import { Listbox, Transition } from '@headlessui/react';
 import { CheckIcon, ChevronUpDownIcon, ArrowPathIcon } from '@heroicons/react/20/solid';
+import { useTranslator } from '@/app/translator/provider';
 
 const ChatComponent: React.FC = () => {
     const dispatch = useAppDispatch();
@@ -25,6 +26,7 @@ const ChatComponent: React.FC = () => {
     const [messageText, setMessageText] = useState('');
     const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(true);
     const chatEndRef = useRef<HTMLDivElement>(null);
+    const { t } = useTranslator();
 
     const handleCategorySwitch = () => {
         setIsCategoryModalOpen(true);
@@ -90,7 +92,7 @@ const ChatComponent: React.FC = () => {
                 <div className="flex items-center justify-center h-screen w-screen fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto z-10">
                     <div className="relative mx-auto mx-4 px-7 py-6 border w-96 shadow-lg rounded-[12px] bg-white">
                         <h3 className="text-3xl font-bold leading-6 font-medium text-gray-900 mt-5 mb-3">
-                            Select Category
+                            {t('selcategory')}
                         </h3>
                         <form
                             className="bg-white rounded pt-6 pb-6"
@@ -152,7 +154,7 @@ const ChatComponent: React.FC = () => {
                                 type="button"
                                 onClick={addCategoryToChat}
                             >
-                                Submit
+                                {t('startchat')}
                             </button>
                         </form>
                     </div>
@@ -192,7 +194,7 @@ const ChatComponent: React.FC = () => {
                 handleCategorySwitch()
             }}>
                 <div className='flex my-auto'>
-                    <span className='text-sm'>Switch Category</span>
+                    <span className='text-sm'>{t('chcategory')}</span>
                     <ArrowPathIcon className="h-4 w-4 my-auto" />
                 </div>
                 <span className='px-2 py-1 rounded-md bg-orange-300 text-yellow-50 text-sm'>{ category.name }</span>

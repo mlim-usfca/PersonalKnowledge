@@ -10,6 +10,7 @@ import SavedContent from '@/components/savedcontent';
 import UserPage from '@/components/user';
 import { UserIcon } from '@heroicons/react/20/solid';
 import Image from 'next/image';
+import { useTranslator } from '@/app/translator/provider';
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ')
@@ -18,6 +19,7 @@ function classNames(...classes: string[]) {
 const Dashboard: React.FC = () => {
   const router = useRouter();
   const { isAuthenticated } = useAuth();
+  const { t } = useTranslator();
 
   useLayoutEffect(() => {
     if (!isAuthenticated) {
@@ -48,7 +50,7 @@ const Dashboard: React.FC = () => {
                   ? 'bg-white text-indigo-700 shadow'
                   : 'hover:bg-white/[0.12] hover:text-indigo-500'
               )
-            }>Saves</Tab>
+            }>{t('saves')}</Tab>
             <Tab className={({ selected }) =>
               classNames(
                 "col-span-2 rounded-lg px-1 my-1",
@@ -56,7 +58,7 @@ const Dashboard: React.FC = () => {
                   ? 'bg-white text-indigo-700 shadow'
                   : 'hover:bg-white/[0.12] hover:text-indigo-500'
               )
-            }>Chat</Tab>
+            }>{t('chat')}</Tab>
             <Tab className={({ selected }) =>
               classNames(
                 "col-span-1 rounded-lg my-1",

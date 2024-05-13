@@ -53,7 +53,7 @@ const SavedContent: React.FC = () => {
                 <button
                     className="px-3 py-2 text-xs text-white bg-indigo-600 rounded-full hover:bg-indigo-700"
                     onClick={() => setIsNewCategoryModalOpen(true)}
-                >New Category</button>
+                >{t('ncategory')}</button>
                 {isNewCategoryModalOpen && (
                     <NewCategoryModal onClose={() => setIsNewCategoryModalOpen(false)} />
                 )}
@@ -79,7 +79,7 @@ const SavedContent: React.FC = () => {
                                                 <div
                                                     className="text-md px-3 py-1 rounded-full bg-purple-200 hover:bg-white"
                                                     onClick={() => handleClick(category.name)}
-                                                >Add New Link +</div>
+                                                >{t('nlink')}</div>
                                                 <ChevronUpIcon className={`${
                                                         open ? 'rotate-180 transform' : ''
                                                     } h-5 w-5 my-auto text-purple-500`}
@@ -91,7 +91,7 @@ const SavedContent: React.FC = () => {
                                                 <LinkPreview key={index} link={link} />
                                             ))}
                                             {category.links.length === 0 && (
-                                                <div className="text-center text-gray-700">No links saved in this category yet... Add one now! </div>
+                                                <div className="text-center text-gray-700">{t('nolink')}</div>
                                             )}
                                         </Disclosure.Panel>
                                         </>

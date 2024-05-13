@@ -46,7 +46,7 @@ const NewCategoryModal: React.FC<NewCategoryModalProps> = (props) => {
           </svg>
         </button>
         <h3 className="text-3xl font-bold leading-6 font-medium text-gray-900 mt-5 mb-3">
-          Save New Category
+          {t('rcategory')}
         </h3>
         <form
           className="bg-white rounded pt-6 pb-6"
@@ -61,7 +61,7 @@ const NewCategoryModal: React.FC<NewCategoryModalProps> = (props) => {
           <input
             className="block w-full px-4 py-2 mt-2 text-gray-700 placeholder-gray-400 focus:outline-
             none focus:ring-blue-500 focus:border-blue-500 sm:text-sm border border-gray-200 rounded-md"
-            placeholder="Your category"
+            placeholder={t('ycategory')}
             value={category}
             onChange={(e) => setCategory(e.target.value)}
           />
@@ -70,7 +70,7 @@ const NewCategoryModal: React.FC<NewCategoryModalProps> = (props) => {
             type="button"
             onClick={addNewCategory}
           >
-            Submit
+            {t('submit')}
           </button>
         </form>
       </div>
