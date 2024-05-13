@@ -1,0 +1,19 @@
+name: 'functions-tests'
+on:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    name: 'functions-tests'
+    defaults: 
+      run:
+        working-directory: ./server/supabase
+    steps:
+      - uses: actions/checkout@v4
+      - uses: supabase/setup-cli@v1
+        with:
+          version: 1.165.0
+      - run: supabase start
+      - run: supabase functions serve
+      - run: deno test --allow-all deno-test.ts --env-file .env.local
