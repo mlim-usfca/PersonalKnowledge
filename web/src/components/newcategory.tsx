@@ -10,6 +10,11 @@ type NewCategoryModalProps = {
   onClose: () => void;
 };
 
+/**
+ * NewCategoryModal component is used for adding a new category.
+ * @param {NewCategoryModalProps} props - Props for the component.
+ * @returns React component for adding a new category.
+ */
 const NewCategoryModal: React.FC<NewCategoryModalProps> = (props) => {
   const dispatch = useAppDispatch();
   const [category, setCategory] = useState('');
@@ -19,7 +24,10 @@ const NewCategoryModal: React.FC<NewCategoryModalProps> = (props) => {
   const handleSubmit = () => {
     props.onClose();
   };
-
+  
+  /**
+   * Adds a new category to the database.
+   */
   const addNewCategory = async () => {
     if (!user) return;
     await dispatch(addCategoryAsync({ category: category, userId: user?.id }));

@@ -11,6 +11,11 @@ import { Disclosure } from '@headlessui/react'
 import { ChevronUpIcon } from '@heroicons/react/20/solid'
 import LinkPreview from "../app/archive/linkPreview";
 
+/**
+ * SavedContent component is used to display user-saved content and manage categories, links, and other functionalities.
+ * @returns React component
+ */
+
 const SavedContent: React.FC = () => {
     const dispatch = useAppDispatch();
     const { user } = useAuth();
@@ -21,6 +26,11 @@ const SavedContent: React.FC = () => {
     const [isNewCategoryModalOpen, setIsNewCategoryModalOpen] = useState(false);
     const [selectedCategory, setSelectedCategory] = useState('');
 
+    /**
+     * useEffect is used to load data after component mounting.
+     * Redirects to the login page if the user is not logged in.
+     * Loads the user's category data.
+     */
     useEffect(() => {
         if (!user) {
             router.push('/');
@@ -36,11 +46,22 @@ const SavedContent: React.FC = () => {
         loadData();
     }, [user, router, dispatch]);
 
+    /**
+     * handleClick handles logic when a category is clicked.
+     * Sets the selected category and opens the new link modal.
+     * @param {string} name - Category name
+     */
     const handleClick = (name: string) => {
         setSelectedCategory(name);
         setIsNewLinkModalOpen(true);
     };
 
+    /**
+     * handleNewLink handles logic for adding a new link.
+     * Adds a new link to the selected category if the user is logged in.
+     * @param {string} link - New link
+     * @param {string} category - Selected category
+     */
     const handleNewLink = async (link: string, category: string) => {
         if (!user) return;
         await dispatch(addLinkToCategory({ link, user, category }));
