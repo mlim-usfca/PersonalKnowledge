@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { useAuth } from '@/app/auth/provider';
+import { useTranslator } from '@/app/translator/provider';
 import { useRouter } from 'next/navigation';
 
 type AuthModalProps = {
@@ -14,6 +15,7 @@ type AuthModalProps = {
 const AuthModal: React.FC<AuthModalProps> = (props) => {
   const router = useRouter();
   const { isAuthenticated, signIn } = useAuth();
+  const { t } = useTranslator();
   
   const handleSignIn = async () => {
     await signIn();
@@ -46,7 +48,7 @@ const AuthModal: React.FC<AuthModalProps> = (props) => {
           </svg>
         </button>
         <h3 className="text-3xl font-bold leading-6 font-medium text-gray-900 mt-5 mb-3">
-          Sign In
+        {t('gsignin')}
         </h3>
         <form
           className="bg-white rounded pt-6 pb-6"
@@ -60,7 +62,7 @@ const AuthModal: React.FC<AuthModalProps> = (props) => {
             type="button"
             onClick={handleSignIn}
           >
-            Sign In with Google
+            {t('glogin')}
           </button>
         </form>
       </div>

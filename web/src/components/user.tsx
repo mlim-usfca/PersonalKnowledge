@@ -1,11 +1,15 @@
 import React from "react";
 import { useAuth } from '@/app/auth/provider';
+import { useTranslator } from '@/app/translator/provider';
 import { useRouter } from 'next/navigation';
 import { deleteChats } from "@/app/chats/functions";
+import Footer from "./footer";
 import Image from "next/image";
+
 
 const UserPage: React.FC = () => {
     const router = useRouter();
+    const { t } = useTranslator();
     const { user, signOut } = useAuth();
 
     const handleSignOut = async () => {
@@ -22,9 +26,10 @@ const UserPage: React.FC = () => {
                 </div>
                 <h2 className="text-xl font-medium my-3">Hi, {user?.user_metadata.full_name}!</h2>
                 <button onClick={handleSignOut} className="bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded">
-                    Sign Out
+                {t('signout')}
                 </button>
             </div>
+            <Footer/>
         </div>
     );
 };
