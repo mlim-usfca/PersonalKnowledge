@@ -76,13 +76,13 @@ const ChatComponent: React.FC = () => {
     useEffect(() => {
         setMessages(chat.messages);
         chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }, [[chat.messages.length]]);
+    }, [chat.messages, [chat.messages.length]]);
 
     useEffect(() => {
         if (user) {
             dispatch(fetchOrCreateChat({ category, user }));
         }
-    }, [category, user]);
+    }, [category, user, dispatch]);
 
     return (
         <div className="flex flex-col h-full">
@@ -170,7 +170,7 @@ const ChatComponent: React.FC = () => {
                             { getUserName() === 'Anonymous' || msg.role === 'system' ?
                                 <Image className="rounded-full" src="/images/user.png" alt="user" width={35} height={35} />
                                 :
-                                <img src={user?.user_metadata.avatar_url} alt="User Avatar" width={80} height={80} className="rounded-full" />
+                                <Image src={user?.user_metadata.avatar_url} alt="User Avatar" width={80} height={80} className="rounded-full" />
                             }
                             </div>
                             <div className={`${ msg.role === 'system' ? 'bg-purple-200' : 'bg-blue-200' } rounded-lg ml-3 p-2 w-11/12 text-sm`}>

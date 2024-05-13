@@ -5,7 +5,6 @@ import { Document } from "langchain/document";
 import { TokenTextSplitter } from "langchain/text_splitter";
 import { Category, SavedLink } from "../interfaces";
 
-
 export const fetchCategories = async (userId: string): Promise<Category[]> => {
     try {
         let userCategories: Category[] = [];
@@ -156,30 +155,31 @@ export const addNewLink = async (link: string, user: User, category: string) => 
     }
 }
 
+interface Chunk {
+    pageContent: string;
+    metadata: {
+        linkId: string;
+    };
+}
+
 const createEmbedding = async (extractedContent: string, linkId: string) => {
     try {
-        // Split and embed the extracted content
         const splitter = new TokenTextSplitter({
             encodingName: "gpt2",
             chunkSize: 300,
             chunkOverlap: 20,
         });
 
-        const contentChunks = await splitter.splitDocuments([
+        const contentChunks: Chunk[] = (await splitter.splitDocuments([
             new Document({
                 pageContent: extractedContent,
-                metadata: {
-                    linkId: linkId,
-                },
+                metadata: { linkId },
             }),
-        ]);
-        // Initialize the pipeline with the desired model
+        ]) as Chunk[]);
+
         const generateEmbedding = await pipeline('feature-extraction', 'Supabase/gte-small');
 
-        // Process each content chunk and generate embeddings
-        const embeddingsPromises = contentChunks.map(async (chunk: {
-            pageContent: string; metadata: { linkId: string; };
-        }) => {
+        const embeddingsPromises = contentChunks.map(async (chunk) => {
             try {
                 const content = chunk.pageContent;
                 const output = await generateEmbedding(content, {
@@ -194,27 +194,26 @@ const createEmbedding = async (extractedContent: string, linkId: string) => {
             }
         });
 
-        // Wait for all embeddings to be generated
         const embeddings = await Promise.all(embeddingsPromises);
-
-        await storeEmbeddings(embeddings, linkId)
+        await storeEmbeddings(embeddings, linkId);
 
         console.log("Embeddings created and stored successfully for link ID:", linkId);
     } catch (error) {
         console.error("Error creating and storing embeddings:", error);
         throw error;
     }
-}
+};
 
-const storeEmbeddings = async (embeddings: [], linkId: string) => {
+const storeEmbeddings = async (embeddings: { embedding: string; content: string; }[], linkId: string) => {
     try {
         const { data, error } = await supabase
             .from("document_sections")
             .insert(embeddings.map(({ embedding, content }) => ({
-                embedding: embedding,
-                content: content,
+                embedding,
+                content,
                 link_id: linkId
             })));
+
         if (error) {
             console.error("Error storing embeddings in Supabase:", error);
             throw error;
@@ -225,4 +224,4 @@ const storeEmbeddings = async (embeddings: [], linkId: string) => {
         console.error("Error storing embeddings in Supabase:", error);
         throw error;
     }
-}
+};

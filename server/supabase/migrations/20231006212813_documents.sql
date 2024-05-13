@@ -11,41 +11,6 @@ create table document_sections (
 
 create index on document_sections using hnsw (embedding vector_ip_ops);
 
--- alter table document_sections enable row level security;
-
--- create policy "Users can insert document sections"
--- on document_sections for insert to authenticated with check (
---   document_id in (
---     select id
---     from documents
---     where created_by = auth.uid()
---   )
--- );
-
--- create policy "Users can update their own document sections"
--- on document_sections for update to authenticated using (
---   document_id in (
---     select id
---     from documents
---     where created_by = auth.uid()
---   )
--- ) with check (
---   document_id in (
---     select id
---     from documents
---     where created_by = auth.uid()
---   )
--- );
-
--- create policy "Users can query their own document sections"
--- on document_sections for select to authenticated using (
---   document_id in (
---     select id
---     from documents
---     where created_by = auth.uid()
---   )
--- );
-
 create function supabase_url()
 returns text
 language plpgsql
@@ -58,3 +23,6 @@ begin
   return secret_value;
 end;
 $$;
+
+-- this table is created to store the link_id for the saved links, splitted texts as content, embedding vectors that are created for the chuhnks and 
+-- the related tag

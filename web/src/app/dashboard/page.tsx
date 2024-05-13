@@ -25,7 +25,7 @@ const Dashboard: React.FC = () => {
     if (!isAuthenticated) {
       router.push('/');
     }
-  }, []);
+  }, [isAuthenticated, router]);
 
   return (
     <div className="flex flex-col px-4 sm:px-10 md:px-24 h-screen overflow-hidden">
