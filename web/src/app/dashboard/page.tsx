@@ -33,7 +33,8 @@ const Dashboard: React.FC = () => {
         <title>Dashboard</title>
       </Head>
       <div className="flex-none mt-12 sm:mt-16 mb-8">
-        <Image src="/DragonAI.png" alt="DragonAI Logo" width={200} height={200} />
+        {/* <Image src="/DragonAI.png" alt="DragonAI Logo" width={200} height={200} /> */}
+        <img src="/DragonAI.png" alt="User Avatar" width={200} height={200} className="rounded-full" />
       </div>
       <Tab.Group>
         <Tab.Panels className="h-full grow overflow-auto">

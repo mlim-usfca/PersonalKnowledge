@@ -168,9 +168,13 @@ const ChatComponent: React.FC = () => {
                         <div className="flex">
                             <div className="h-9 w-9 flex items-center justify-center">
                             { getUserName() === 'Anonymous' || msg.role === 'system' ?
-                                <Image className="rounded-full" src="/images/user.png" alt="user" width={35} height={35} />
+                                // <Image className="rounded-full" src="/images/user.png" alt="user" width={35} height={35} />
+                                <img src="/images/user2.png" alt="User Avatar" width={300} height={300} className="rounded-full" />
+
                                 :
-                                <Image src={user?.user_metadata.avatar_url} alt="User Avatar" width={80} height={80} className="rounded-full" />
+                                // <Image src={user?.user_metadata.avatar_url} alt="User Avatar" width={80} height={80} className="rounded-full" />
+                                <img src="/images/user.png" alt="User Avatar" width={300} height={300} className="rounded-full" />
+
                             }
                             </div>
                             <div className={`${ msg.role === 'system' ? 'bg-purple-200' : 'bg-blue-200' } rounded-lg ml-3 p-2 w-11/12 text-sm`}>
